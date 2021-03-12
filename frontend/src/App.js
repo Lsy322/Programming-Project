@@ -29,6 +29,7 @@ const App = () => {
   const classes = useStyles();
 
   return (
+      // navigation bar componen
     <Router>
       <div className={classes.root}>
         <AppBar position="static">
