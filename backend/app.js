@@ -1,20 +1,24 @@
 var express = require('express')
 var app = express()
+var post_Info = require('./post_Info')
+var formidable = require('formidable')
+var path = require('path')
+var fs = require('fs')
+app.use(express.urlencoded({extended: true}))
 
-//db variable
-// var mongoose = require('mongoose');
-// mongoose.connect('mongodb://localhost/backend');
-// let db = mongoose.connection;
+//Require Database
+var mongoose = require('mongoose');
+mongoose.Promise = global.Promise
+mongoose.connect("mongodb://localhost:27017/ProgrammingProject")
+.then(()=> {console.log("Connected database")},
+err=>{console.log("Error connecting to database")})
 
-//Check Connection
-// db.once('open', function(){
-//     console.log('Connected to mongoDB')
-// })
+var db = mongoose.connection;
+var postCollection = db.collection("posts")
 
-//Check for db error
-// db.on('error',function(err){
-//     console.log(err);
-// });
+//Variable
+var dir = "UploadDir"
+var docCount = 0
 
 //Default
 app.get('/', (req,res) => {
@@ -28,7 +32,28 @@ app.get('/Posts', (req,res) =>{
 
 //NewPost
 app.put('/newPost',(req,res)=>{
-    res.json({message:'Created New Post Successfully'})
+    docCount = 0;
+    var cursor = postCollection.find({}) //get the database cursor
+    cursor.forEach(element => { //get document count
+        docCount++
+    })
+    .then(()=>{
+        // var testdoc = {id:docCount, name:"admin",title:"TestTitle"} //Inserting a testing document
+        // postCollection.insertOne(testdoc)
+        var form = formidable({keepExtensions:true,multiples:true,uploadDir:dir}) //recieve upload form
+
+        form.parse(req,(err,fields,files)=>{
+            if (err){  //rename and direct the file into fs
+                res.json({error:"Error occur uploading the files"})
+            }
+            new_name = path.join(path.dirname(files.clipInfo.path),Date.now()/1000 + path.extname(files.clipInfo.path))
+            fs.renameSync(files.clipInfo.path,new_name)
+            res.json({msg:"Upload Successful",path1:files.clipInfo.path})
+
+            var post = {id:docCount+1,path:files.clipInfo.path,description:"Temp"}
+            postCollection.insertOne(post);
+        })
+    })
 })
 
 //DeletePost
