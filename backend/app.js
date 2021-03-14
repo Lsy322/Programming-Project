@@ -1,10 +1,8 @@
 var express = require('express')
 var app = express()
-var post_Info = require('./post_Info')
 var formidable = require('formidable')
 var path = require('path')
 var fs = require('fs')
-app.use(express.urlencoded({extended: true}))
 
 //Require Database
 var mongoose = require('mongoose');
@@ -16,9 +14,12 @@ err=>{console.log("Error connecting to database")})
 var db = mongoose.connection;
 var postCollection = db.collection("posts")
 
+
+
 //Variable
 var dir = "UploadDir"
-var docCount = 0
+var docCount = 0 
+
 
 //Default
 app.get('/', (req,res) => {
@@ -38,21 +39,24 @@ app.put('/newPost',(req,res)=>{
     docCount = 0;
     var cursor = postCollection.find({}) //get the database cursor
     cursor.forEach(element => { //get document count
-        docCount++
+    docCount++
     })
     .then(()=>{
         var nextId = (docCount + 1).toString();
         var form = formidable({keepExtensions:true,multiples:true,uploadDir:dir}) //recieve upload form
-
         form.parse(req,(err,fields,files)=>{
             if (err){  //rename and direct the file into fs
                 res.json({error:"Error occur uploading the files"})
             }
             new_name = path.join(path.dirname(files.clipInfo.path),Date.now()/1000 + path.extname(files.clipInfo.path))
             fs.renameSync(files.clipInfo.path,new_name)
-
-            var post = {id:nextId,path:new_name,description:"Temp"} //Store info into db
-            postCollection.insertOne(post);
+            var post = {    //Post structure
+                id:nextId,
+                path:new_name,
+                description:fields.description
+            } 
+            postCollection.insertOne(post); //Store info into db
+            docCount++
 
             res.json({msg:"Upload Successful",path1:new_name,id:nextId}) //Return
         })
@@ -63,16 +67,29 @@ app.put('/newPost',(req,res)=>{
 app.post('/deletePost/:id' , (req,res) => {
     if (!req.params.id){
         res.json({messsage:'Error deleting post'})
-        return
     }
-    postCollection.findOne({id:req.params.id},(err,result)=>{
-        fs.unlinkSync(result.path);
-    })
-
-    postCollection.deleteOne({id:req.params.id},(err,obj)=>{
-        if (err) throw err
-        res.json({msg:"Clip with id " + req.params.id + " has been deleted"})
-    })
+    if (req.params.id == "all"){     //ONLY FOR DEVOLOPING PURPOSES
+        for (var i=1;i <= docCount;i++){
+            postCollection.findOneAndDelete({id:i.toString()},(err,docs,result)=>{
+                if (err || docs.value == null){
+                    return
+                }else{
+                   fs.unlinkSync(docs.value.path);
+                }
+           })  
+        }
+        res.json({msg:"deleted all files"})
+    }else{
+        postCollection.findOneAndDelete({id:req.params.id},(err,docs,result)=>{
+            if (err || docs.value == null){
+                res.json({msg:"No result found"})
+                return
+            }else{
+               fs.unlinkSync(docs.value.path);
+               res.json({msg:"Deleted post",doc:docs,result:result})
+            }
+       })  
+    } 
 })
 
 
