@@ -27,7 +27,10 @@ app.get('/', (req,res) => {
 
 //ListPosts
 app.get('/Posts', (req,res) =>{
-    res.json({message:'Listed Posts'})
+    postCollection.find({}).toArray((err,result)=>{
+        if (err) throw err
+        res.json({media:result})
+    })
 })
 
 //NewPost
@@ -38,8 +41,7 @@ app.put('/newPost',(req,res)=>{
         docCount++
     })
     .then(()=>{
-        // var testdoc = {id:docCount, name:"admin",title:"TestTitle"} //Inserting a testing document
-        // postCollection.insertOne(testdoc)
+        var nextId = (docCount + 1).toString();
         var form = formidable({keepExtensions:true,multiples:true,uploadDir:dir}) //recieve upload form
 
         form.parse(req,(err,fields,files)=>{
@@ -48,10 +50,11 @@ app.put('/newPost',(req,res)=>{
             }
             new_name = path.join(path.dirname(files.clipInfo.path),Date.now()/1000 + path.extname(files.clipInfo.path))
             fs.renameSync(files.clipInfo.path,new_name)
-            res.json({msg:"Upload Successful",path1:files.clipInfo.path})
 
-            var post = {id:docCount+1,path:files.clipInfo.path,description:"Temp"}
+            var post = {id:nextId,path:new_name,description:"Temp"} //Store info into db
             postCollection.insertOne(post);
+
+            res.json({msg:"Upload Successful",path1:new_name,id:nextId}) //Return
         })
     })
 })
@@ -62,7 +65,14 @@ app.post('/deletePost/:id' , (req,res) => {
         res.json({messsage:'Error deleting post'})
         return
     }
-    res.json({message:'deleted clip with id ' + req.params.id})
+    postCollection.findOne({id:req.params.id},(err,result)=>{
+        fs.unlinkSync(result.path);
+    })
+
+    postCollection.deleteOne({id:req.params.id},(err,obj)=>{
+        if (err) throw err
+        res.json({msg:"Clip with id " + req.params.id + " has been deleted"})
+    })
 })
 
 
