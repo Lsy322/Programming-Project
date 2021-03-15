@@ -6,15 +6,21 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
-
+import Divider from '@material-ui/core/Divider';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
+
+
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-
+import SendIcon from '@material-ui/icons/Send';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -86,7 +92,22 @@ export default function Post() {
         </IconButton>
         
       </CardActions>
-     
+      <Divider />
+      <FormControl fullWidth >
+        <InputLabel htmlFor='comment'>comments on the post</InputLabel>
+        <Input 
+          id='comment'
+          //value should be made later
+          endAdornment={
+            <InputAdornment position='end'>
+              <IconButton
+              aria-label='comment button'>
+              <SendIcon/>
+              </IconButton>
+            </InputAdornment>
+          }
+        />
+      </FormControl>
     </Card>
   );
 }
