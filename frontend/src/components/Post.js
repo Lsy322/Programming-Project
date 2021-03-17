@@ -16,12 +16,10 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
 
-
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import SendIcon from '@material-ui/icons/Send';
-
+import VerticalMoreButton from './verticalMoreButton';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -64,9 +62,7 @@ export default function Post() {
           </Avatar>
         }
         action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
+          <VerticalMoreButton />
         }
         title="Shrimp and Chorizo Paella"
         subheader="September 14, 2016"
