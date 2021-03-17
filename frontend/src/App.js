@@ -1,5 +1,5 @@
 
-import React from "react";
+import React,{useEffect} from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 import Home from "./pages/Home";
@@ -13,6 +13,8 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MenuIcon from "@material-ui/icons/Menu";
+import { useDispatch } from "react-redux";
+import { getPosts } from "./context/action/posts";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,6 +30,11 @@ const useStyles = makeStyles((theme) => ({
 
 const App = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  useEffect(()=>{
+    dispatch(getPosts());  
+  },[dispatch])
 
   return (
       // navigation bar componen
