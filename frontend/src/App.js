@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 import Home from "./pages/Home";
 import CreatePost from "./pages/CreatePost";
+import TestBackend from "./pages/TestBackend";
 import {
   AppBar,
   Toolbar,
@@ -46,7 +47,9 @@ const App = () => {
             <Typography variant="h6" className={classes.title}>
               Test
             </Typography>
-            
+
+            <Button variant='contained' color='primary' href='/testBackend'>TestBackend</Button>
+
             <Button variant='contained' color='primary' href='/createPost'>Create Post</Button>
 
             <Button variant='contained' color='primary' href='/'>Home</Button>
@@ -56,6 +59,10 @@ const App = () => {
         {/* A <Switch> looks through its children <Route>s and
               renders the first one that matches the current URL. */}
         <Switch>
+          <Route path="/testBackend">
+            <TestBackend />
+          </Route>
+
           <Route path="/createPost">
             <CreatePost />
           </Route>

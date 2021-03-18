@@ -1,7 +1,7 @@
-import Axios from "axios"
+import axios from "axios"
 
-const _axios = (baseURL) => {
-    const instance = Axios.create({
+const Axios = (baseURL) => {
+    const instance = axios.create({
         baseURL: baseURL || 'http://localhost:5000',
         timeout: 1000,
     });
@@ -9,5 +9,5 @@ const _axios = (baseURL) => {
     return instance;
 }
 
-export {_axios};
-export default _axios();
+export {Axios};
+export default Axios();
