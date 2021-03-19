@@ -10,7 +10,7 @@ app.use(cors());
 //Require Database
 var mongoose = require('mongoose');
 mongoose.Promise = global.Promise
-mongoose.connect("mongodb://localhost:27017/ProgrammingProject")
+mongoose.connect("mongodb+srv://mark:hkccpp@clips.ipkvx.mongodb.net/clips?retryWrites=true&w=majority")
 .then(()=> {console.log("Connected database")},
 err=>{console.log("Error connecting to database")})
 
