@@ -22,8 +22,8 @@ const useStyles = makeStyles((theme) => ({
 //A container to contain all the post element
 const PostList = () => {
   //the state have to be confirmed
-  const classes = useStyles();
   const posts = useSelector((state) => state.posts);
+  const classes = useStyles();
 
   console.log(posts);
 
