@@ -4,6 +4,9 @@ var formidable = require('formidable')
 var path = require('path')
 var fs = require('fs')
 
+var cors = require('cors');
+app.use(cors());
+
 //Require Database
 var mongoose = require('mongoose');
 mongoose.Promise = global.Promise
@@ -27,7 +30,7 @@ app.get('/', (req,res) => {
 })
 
 //ListPosts
-app.get('/Posts', (req,res) =>{
+app.get('/posts', (req,res) =>{
     postCollection.find({}).toArray((err,result)=>{
         if (err) throw err
         res.json({media:result})
