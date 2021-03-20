@@ -3,7 +3,11 @@ import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import AddAnnotationDialog from './createAnnotation';
+
+//dialogs
+import AddAnnotationDialog from './Add_Annotation/createAnnotation';
+import ViewAnnotationDialog from  './View_Annotation/viewAnnotation';
+
 const options = [
     'Add annotation',
     'View annotation',
@@ -13,14 +17,15 @@ const options = [
 const VerticalMoreButton = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-    const [dialogOpen, setDialogOpen] =useState(false);
+    const [AddDialogOpen, setAddDialogOpen] =useState(false);
+    const [ViewDialoagOpen, setViewDialogOpen] = useState(false);
 
-    const handleDialogOpen = () => {
-        setDialogOpen(true);
+    const handleAddDialogOpen = () => {
+        setAddDialogOpen(true);
     }
     
-    const closeDialog = () => {
-        setDialogOpen(false);
+    const handleViewDialogOpen = () => {
+        setViewDialogOpen(true);
     }
 
     const handleClick = (e) => {
@@ -33,7 +38,10 @@ const VerticalMoreButton = () => {
 
     const handleMenuItemClick = (e) => {
         if (e.target.textContent === 'Add annotation'){
-            handleDialogOpen();
+            handleAddDialogOpen();
+        }
+        else if (e.target.textContent === 'View annotation'){
+            handleViewDialogOpen();
         }
         setAnchorEl(null);
     }
@@ -63,11 +71,17 @@ const VerticalMoreButton = () => {
         ))}
         </Menu>
         <AddAnnotationDialog
-        open={dialogOpen}
-        setOpen={setDialogOpen}
+        open={AddDialogOpen}
+        setOpen={setAddDialogOpen}
         >
             
         </AddAnnotationDialog>
+
+        <ViewAnnotationDialog
+        open={ViewDialoagOpen}
+        setOpen={setViewDialogOpen}>
+
+        </ViewAnnotationDialog>
         </div>
        
     );

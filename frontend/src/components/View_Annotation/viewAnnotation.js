@@ -8,9 +8,9 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 
+import ViewAnnotation from './Annotation_View';
 
-
-const AddAnnotationDialog = ({ open, setOpen }) => {
+const ViewAnnotationDialog = ({ open, setOpen }) => {
   const handleClose = () => {
     setOpen(false);
   };
@@ -18,11 +18,13 @@ const AddAnnotationDialog = ({ open, setOpen }) => {
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add annotation</DialogTitle>
-        <DialogContent>Content</DialogContent>
+        <DialogTitle>View annotation</DialogTitle>
+        <DialogContent>
+          <ViewAnnotation />
+        </DialogContent>
       </Dialog>
     </div>
   );
 };
 
-export default AddAnnotationDialog;
+export default ViewAnnotationDialog;
