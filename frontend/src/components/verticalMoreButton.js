@@ -14,7 +14,7 @@ const options = [
     'set Permission', 
 ];
 
-const VerticalMoreButton = () => {
+const VerticalMoreButton = ({post}) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const [AddDialogOpen, setAddDialogOpen] =useState(false);
@@ -73,13 +73,15 @@ const VerticalMoreButton = () => {
         <AddAnnotationDialog
         open={AddDialogOpen}
         setOpen={setAddDialogOpen}
+        post={post}
         >
             
         </AddAnnotationDialog>
 
         <ViewAnnotationDialog
         open={ViewDialoagOpen}
-        setOpen={setViewDialogOpen}>
+        setOpen={setViewDialogOpen}
+        post={post}>
 
         </ViewAnnotationDialog>
         </div>

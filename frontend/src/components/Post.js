@@ -21,6 +21,8 @@ import ShareIcon from '@material-ui/icons/Share';
 import SendIcon from '@material-ui/icons/Send';
 import VerticalMoreButton from './verticalMoreButton';
 
+import {useSelector} from 'react-redux';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: '10px',
@@ -45,38 +47,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Post() {
+export default function Post({post}) {
   const classes = useStyles();
-  const [expanded, setExpanded] = React.useState(false);
-
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
-
+  const postData = useSelector(state => state.testPost);
+  console.log(postData);
   return (
     <Card className={classes.root} >
       <CardHeader
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
-            R
+            {post.author}
           </Avatar>
         }
         action={
-          <VerticalMoreButton />
+          <VerticalMoreButton post={post}/>
         }
-        title="Shrimp and Chorizo Paella"
-        subheader="September 14, 2016"
+        title={post.title}
+        subheader={post.date}
       />
 
-      <CardMedia className={classes.media} image='https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8cGljdHVyZXxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80' />
-      
-          
+      <CardMedia className={classes.media} image={post.image} />
       
 
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
-          This impressive paella is a perfect party dish and a fun meal to cook together with your
-          guests. Add 1 cup of frozen peas along with the mussels, if you like.
+          {post.description}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
