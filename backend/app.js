@@ -16,8 +16,13 @@ err=>{console.log("Error connecting to database")})
 
 var db = mongoose.connection;
 var postCollection = db.collection("posts")
+var userCollection = db.collection("users")
 
-
+const user = new mongoose.Schema({
+    userName:'string',
+    password : 'string',
+    email : 'string'
+})
 
 //Variable
 var dir = "UploadDir"
@@ -28,6 +33,8 @@ var docCount = 0
 app.get('/', (req,res) => {
     res.send('hello world')
 })
+
+//#region Posts
 
 //ListPosts
 app.get('/posts', (req,res) =>{
@@ -67,20 +74,12 @@ app.put('/newPost',(req,res)=>{
 })
 
 //DeletePost
-app.post('/deletePost/:id' , (req,res) => {
+app.post('/post/:id/delete' , (req,res) => {
     if (!req.params.id){
         res.json({messsage:'Error deleting post'})
     }
     if (req.params.id == "all"){     //ONLY FOR DEVOLOPING PURPOSES
-        for (var i=1;i <= docCount;i++){
-            postCollection.findOneAndDelete({id:i.toString()},(err,docs,result)=>{
-                if (err || docs.value == null){
-                    return
-                }else{
-                   fs.unlinkSync(docs.value.path);
-                }
-           })  
-        }
+        postCollection.deleteMany({});
         res.json({msg:"deleted all files"})
     }else{
         postCollection.findOneAndDelete({id:req.params.id},(err,docs,result)=>{
@@ -94,7 +93,44 @@ app.post('/deletePost/:id' , (req,res) => {
        })  
     } 
 })
+//#endregion
 
+//#region Users
+app.put('/newUser', (req,res)=>{
+    var form = formidable({keepExtensions:true,multiples:true,uploadDir:dir}) //recieve upload form
+    form.parse(req,(err,fields,files)=>{ 
+        const Testuser = new mongoose.model('user',user)
+        var newUser = new Testuser({userName:'Test'})
+        newUser.save((err)=>{
+            if (err){
+                console.log(err)
+                return;
+            }
+        });
+        res.json({msg:'added user'})
+    })
+})
+
+app.get('/listUser',(req,res)=>{
+    userCollection.find({}).toArray((err,result)=>{
+        if (err) throw err
+        res.json({users:result})
+    })
+})
+
+app.post('/user/:id/delete',(req,res)=>{
+    console.log(req.params.id)
+    userCollection.find
+    userCollection.findOneAndDelete({_id:req.params.id},(err,docs,result)=>{
+        if (err||docs == null){
+            res.json({msg:'No such user'})
+            return;
+        }else{
+            res.json({msg:"deleted user",doc:docs})
+        }
+    })
+})
+//#endregion
 
 app.listen(5000, () => {
     console.log('Server running on port 5000...')
