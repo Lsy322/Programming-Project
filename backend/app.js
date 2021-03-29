@@ -1,20 +1,28 @@
-const express = require('express'),
-    app = express(),
-    port = process.env.PORT || 5000,
-    cors = require('cors'),
-    mongoose = require('mongoose'),
-    morgan = require('morgan'),
-    fileUpload = require('express-fileupload'),
-    Post = require('./models/Posts'),
-    fs = require('fs');
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 5000;
+const cors = require('cors');
+const mongoose = require('mongoose');
+const morgan = require('morgan');
+const fileUpload = require('express-fileupload');
+const Post = require('./models/Posts');
+const fs = require('fs');
+const http = require('http');
+const server = http.createServer(app);
+const socketio = require('socket.io');
+const io = socketio(server, {
+    cors: {
+        origin: "http://localhost:3000"
+    }
+});
+const   { v4: uuidv4 } = require('uuid');
 
 //<username>:<password>@clips.ipkvx.mongodb.net/<database name>?retryWrites=true&w=majority
 
 const dbUrl = 'mongodb+srv://mark:hkccpp@clips.ipkvx.mongodb.net/clips?retryWrites=true&w=majority';
-
 //for stopping warning
 mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true})
-    .then((result) => app.listen(port))
+    .then((result) => server.listen(port))
     .catch((err) => console.log(err));
 
 //middleware
@@ -23,6 +31,96 @@ app.use(cors())
 app.use(fileUpload({createParentPath: true}))
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
+
+
+// testing
+
+const n2 = (n, res) =>{
+    return new Promise(resolve => {
+        for(let i = 0; i<n;i++)
+            for(let j = 0; j<n;j++)
+        resolve('resolved')
+    })
+}
+
+const calln2 = async (n, res) => {
+    console.log('calling');
+    const result = await n2(n, res)
+    console.log(result);
+}
+
+function resolveAfter2Seconds(n) {
+    return new Promise(resolve => {
+        // for(let i = 0; i<n;i++)
+        //     for(let j = 0; j<n;j++)
+        //         console.log(`${i}:${j}`)
+        // resolve('resolved');
+        setTimeout(() => {
+            resolve('resolved');
+        }, n);
+    });
+}
+
+async function asyncCall(n) {
+    console.log('calling');
+    const result = await resolveAfter2Seconds(n);
+    console.log(result);
+    // expected output: "resolved"
+}
+
+app.get('/n2/:n', ((req, res) => {
+    const n = req.params.n
+
+    //res.send('Started')
+    // calln2(n)
+    // console.log(1)
+    // calln2(n)
+    // console.log(2)
+    // calln2(n)
+    // console.log(3)
+    calln2(n).then(() => res.sendStatus(200))
+
+    //res.send('hey')
+}))
+
+//-----
+
+let chat = []
+
+const isExist = (user) => {
+    if(chat.includes(user))
+        console.log(chat)
+}
+isExist(7)
+app.get('/liveChat/createRoom', ((req, res) => {
+    //let
+    console.log(req.body.userName)
+    //if(isExist(req.body.userName))
+    res.redirect(`/liveChat/${uuidv4()}`)
+}))
+
+
+app.get('/liveChat/:roomId', ((req, res) => {
+    res.send(req.params.roomId)
+}))
+
+io.on('connection', socket => {
+    if(false){
+        console.log('new client connected')
+
+        socket.on('join', () => {
+            console.log('hey')
+        })
+
+
+    }else{
+
+    }
+    socket.on('disconnect', (userName, roomId) =>{
+        console.log('client disconnected')
+    })
+})
+
 
 app.get('/add-post', ((req, res) => {
     const post = new Post({
