@@ -93,6 +93,10 @@ app.post('/post/:id/delete' , (req,res) => {
        })  
     } 
 })
+
+app.post('/post/addComment/:id',(req,res)=>{
+    
+})
 //#endregion
 
 //#region Users
