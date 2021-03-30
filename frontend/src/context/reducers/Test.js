@@ -1,6 +1,6 @@
 const initialState = [
     {
-        id: 'picture 1',
+        id: Math.floor(Math.random() * 100),
         title: 'Shrimp and Chorizo Paella',
         author: 'R',
         date: 'September 14, 2016',
@@ -10,7 +10,7 @@ const initialState = [
         annotations: [],
       },
       {
-        id: 'picture 2',
+        id: Math.floor(Math.random() * 100),
         title: 'title 2',
         author: 'Fekky',
         date: 'September 14, 2017',
@@ -25,6 +25,9 @@ export default (testPost = initialState, action) => {
     switch(action.type){
         case 'FETCH_ALL':
             return testPost;
+        case 'UPDATE_POST':
+            console.log('reducer');
+            return testPost.map((post)=> (post.id === action.payload.id ? post.annotations.push(action.payload.annotation): post.annotations));
         default: 
             return testPost;
     }

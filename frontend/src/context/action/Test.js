@@ -4,3 +4,14 @@ export const getPost = () => {
     }
 }
 
+export const updateAnnotation = (id, annotation) => {
+   console.log('action');
+   return {
+       type: 'UPDATE_POST',
+       payload: {
+           id: id,
+           annotation: annotation,
+       }
+   }
+}
+

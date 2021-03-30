@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Card from '@material-ui/core/Card';
@@ -49,8 +49,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Post({post}) {
   const classes = useStyles();
-  const postData = useSelector(state => state.testPost);
-  console.log(postData);
+  
+  const [postInfo, setPostInfo] = useState(post);
+
+  useEffect(()=> {
+    console.log('post info changed');
+  },[postInfo]);
+  
   return (
     <Card className={classes.root} >
       <CardHeader
@@ -60,7 +65,7 @@ export default function Post({post}) {
           </Avatar>
         }
         action={
-          <VerticalMoreButton post={post}/>
+          <VerticalMoreButton post={post} postInfo={postInfo} setPostInfo={setPostInfo}/>
         }
         title={post.title}
         subheader={post.date}

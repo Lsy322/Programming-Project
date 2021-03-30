@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import Annotation from 'react-image-annotation'
+import {connect} from 'react-redux';
+import {updateAnnotation} from '../../context/action/Test';
 
-export default class AddAnnotation extends Component {
+class AddAnnotation extends Component {
   state = {
     annotations: [],
     annotation: {}
@@ -13,11 +15,14 @@ export default class AddAnnotation extends Component {
 
   onSubmit = (annotation) => {
     const { geometry, data } = annotation
-
+    
     //upload the annotation
+    // this.props.updateAnnotation(this.props.post.id, {data: data, geometry: geometry});
     this.props.post.annotations.push({data: data, geometry: geometry});
+    console.log(this.props.post);
     this.setState({
       annotation: {},
+      //should add key later
       annotations: this.state.annotations.concat({
         geometry,
         data: {
@@ -26,11 +31,12 @@ export default class AddAnnotation extends Component {
         }
       })
     })
+
     
+
   }
 
   render () {
-    console.log(this.props.post.annotations);
     return (
       <Annotation
         src={this.props.post.image}
@@ -47,3 +53,5 @@ export default class AddAnnotation extends Component {
     )
   }
 }
+
+export default connect(null,{updateAnnotation})(AddAnnotation);

@@ -9,18 +9,20 @@ import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import AddAnnotation from './Annotation_Add';
 
-const AddAnnotationDialog = ({ open, setOpen, post }) => {
+const AddAnnotationDialog = ({ open, setOpen, post, postInfo, setPostInfo }) => {
   const handleClose = () => {
     setOpen(false);
   };
 
-  console.log(post);
+
+
+
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Add annotation</DialogTitle>
         <DialogContent>
-          <AddAnnotation post={post}/>
+          <AddAnnotation post={post} postInfo={postInfo} setPostInfo={setPostInfo}/>
         </DialogContent>
       </Dialog>
     </div>
