@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import FileBase from "react-file-base64";
 import {useDispatch} from 'react-redux';
 import {createPost} from '../context/action/posts';
+import {useHistory} from 'react-router-dom';
  //   {
   //     id: 'picture 2',
   //     title: 'title 2',
@@ -23,6 +24,8 @@ const CreatePostForm = () => {
     annotations:[],
   });
   const dispatch = useDispatch();
+  const history = useHistory();
+
 
   const clear = () => {
     setPostData({
@@ -39,6 +42,7 @@ const CreatePostForm = () => {
     e.preventDefault();
     dispatch(createPost(postData));
     clear();
+    history.push('/'); // THE FUNCTION TO GO BACK TO HOME PAGE
   }
 
   return (

@@ -11,11 +11,13 @@ var mongoose = require('mongoose');
     //     annotations: [],
 
 const postSchema = mongoose.Schema({
+    id: mongoose.Types.ObjectId,
     title: String,
-    message: String,
-    creator: String,
-    tags: [String],
-    selectedFile: String,
+    author: String,
+    description: String,
+    image: String,
+    comment: [String],
+    annotations: [Object],
     likeCount: {
         type:Number,
         default: 0
@@ -24,9 +26,7 @@ const postSchema = mongoose.Schema({
         type: Date,
         default: Date.now()
     },
-    id: {
-        type: String
-    }
+    
 });
 
 const PostMessage = mongoose.model('posts',postSchema);

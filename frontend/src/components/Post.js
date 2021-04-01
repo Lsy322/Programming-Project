@@ -20,8 +20,10 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
 import SendIcon from '@material-ui/icons/Send';
 import VerticalMoreButton from './verticalMoreButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 
-import {useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
+import {deletePost} from '../context/action/posts';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,11 +53,18 @@ export default function Post({post}) {
   const classes = useStyles();
   
   const [postInfo, setPostInfo] = useState(post);
+  const dispatch = useDispatch();
 
   useEffect(()=> {
     console.log('post info changed');
   },[postInfo]);
   
+
+  const handleDeleteClick = () => {
+    console.log(post);
+    dispatch(deletePost(post._id));
+  }
+
   return (
     <Card className={classes.root} >
       <CardHeader
@@ -68,7 +77,7 @@ export default function Post({post}) {
           <VerticalMoreButton post={post} postInfo={postInfo} setPostInfo={setPostInfo}/>
         }
         title={post.title}
-        subheader={post.date}
+        subheader={post.createAt}
       />
 
       <CardMedia className={classes.media} image={post.image} />
@@ -87,6 +96,11 @@ export default function Post({post}) {
           <ShareIcon />
         </IconButton>
         
+        {/* should be diappear after the user authentication added */}
+        <IconButton aria-label="delete" onClick={handleDeleteClick}>
+          <DeleteIcon />
+        </IconButton>
+
       </CardActions>
       <Divider />
       <FormControl fullWidth >

@@ -26,7 +26,6 @@ const PostList = () => {
   
   const testPost = useSelector((state) => state.testPost);
   const classes = useStyles();
-  console.log(testPost);
   console.log(posts);
   //used test case to parse the data of the posts to the lower level components
   // const [testPosts, setTestPosts] = useState([
@@ -66,8 +65,8 @@ const PostList = () => {
   return (
     <Box className={classes.postContainer} >
       {
-        testPost.map((post)=> (
-          <Post key={post.id} className={classes.border} my={2} post={post} />
+        posts.map((post)=> (
+          <Post key={post._id} className={classes.border} my={2} post={post} />
         ))
       }
     </Box>
