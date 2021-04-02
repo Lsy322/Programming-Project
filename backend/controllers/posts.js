@@ -4,7 +4,6 @@ module.exports =
 {getPosts : async (req, res) => {
     try{
         const postMessage = await PostMessage.find();
-        console.log(postMessage);
         res.status(200).json(postMessage);
     }catch (err){
         res.status(404).json({message: "error message"});
@@ -32,11 +31,27 @@ deletePost : async (req,res) =>{
         res.json({msg:"deleted all files"})
     }else{
         try {
-            await PostMessage.deleteOne({id:req.params.id})
+            await PostMessage.deleteOne({_id:req.params.id})
             res.json({message:"Deleted Post"})
         }catch (err){
             res.json({message:err});
         }
     } 
+},
+
+updatePost: async (req,res)=>{
+    try {
+        await PostMessage.deleteOne({_id:req.body._id})
+    }catch (err){
+        res.json({message:err});
     }
+    const doc = new PostMessage(req.body);
+    try{
+        await doc.save()
+        res.json({message:"Updated Post"})
+    }catch (err){
+        res.json({message:err})
+    }
+
+}
 };
