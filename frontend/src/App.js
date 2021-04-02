@@ -13,7 +13,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MenuIcon from "@material-ui/icons/Menu";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getPosts } from "./context/action/posts";
 
 const useStyles = makeStyles((theme) => ({
@@ -31,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
 const App = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const posts = useSelector((state) => state.posts);
 
   useEffect(()=>{
     dispatch(getPosts());  

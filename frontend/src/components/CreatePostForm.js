@@ -1,17 +1,61 @@
 import { TextField, Button, Typography } from "@material-ui/core";
 import React, { useState } from "react";
 import FileBase from "react-file-base64";
-
+import {useDispatch} from 'react-redux';
+import {createPost} from '../context/action/posts';
+import {useHistory} from 'react-router-dom';
+ //   {
+  //     id: 'picture 2',
+  //     title: 'title 2',
+  //     author: 'Fekky',
+  //     date: 'September 14, 2017',
+  //     description: 'description 2',
+  //     image: 'https://cdn.mos.cms.futurecdn.net/yL3oYd7H2FHDDXRXwjmbMf-970-80.jpg.webp',
+  //     comments: [],
+  //     annotations: [],
+  //   }
 const CreatePostForm = () => {
   const [postData, setPostData] = useState({
+    title: '',
+    author: 'User',
     description: "",
-    selectedFile: "",
+    image: "",
+    comment: [],
+    annotations:[],
   });
+  const dispatch = useDispatch();
+  const history = useHistory();
 
-  
+
+  const clear = () => {
+    setPostData({
+      title: '',
+      author: 'User',
+      description: "",
+      image: "",
+      comment: [],
+      annotations:[],
+    });
+  }
+
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    dispatch(createPost(postData));
+    clear();
+    history.push('/'); // THE FUNCTION TO GO BACK TO HOME PAGE
+  }
+
   return (
-    <form autoComplete="off" noValidate >
+    <form autoComplete="off" noValidate onSubmit={handleSubmit}>
       <Typography variant="h6">Create Posts</Typography>
+      <TextField
+      name="title"
+      variant='outlined'
+      label='title'
+      fullWidth
+      value={postData.title}
+      onChange={(e) => setPostData({ ...postData, title: e.target.value })}
+      />
       <TextField
         name="description"
         variant="outlined"
@@ -27,7 +71,7 @@ const CreatePostForm = () => {
           type="file"
           multiple={false}
           onDone={({ base64 }) =>
-            setPostData({ ...postData, selectedFile: base64 })
+            setPostData({ ...postData, image: base64 })
           }
         />
       </div>

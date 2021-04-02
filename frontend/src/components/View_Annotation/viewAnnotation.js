@@ -10,7 +10,7 @@ import Typography from "@material-ui/core/Typography";
 
 import ViewAnnotation from './Annotation_View';
 
-const ViewAnnotationDialog = ({ open, setOpen }) => {
+const ViewAnnotationDialog = ({ open, setOpen, post }) => {
   const handleClose = () => {
     setOpen(false);
   };
@@ -20,7 +20,7 @@ const ViewAnnotationDialog = ({ open, setOpen }) => {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>View annotation</DialogTitle>
         <DialogContent>
-          <ViewAnnotation />
+          <ViewAnnotation post={post}/>
         </DialogContent>
       </Dialog>
     </div>

@@ -1,48 +1,57 @@
-import React, {useState, Component} from 'react';
-import Annotation from 'react-image-annotation';
+import React, { Component } from 'react'
+import Annotation from 'react-image-annotation'
+import {connect} from 'react-redux';
+import {updatePost} from '../../context/action/posts';
 
-export default class AddAnnotation extends Component {
-    //the state have to be saved after submition
-    state = {
-        annotations: [],
-        annotation: {}
-    }
+class AddAnnotation extends Component {
+  state = {
+    annotations: [],
+    annotation: {}
+  }
 
-    onChange = (annotation) => {
-        this.setState({annotation});
-    }
+  onChange = (annotation) => {
+    this.setState({ annotation })
+  }
 
-    onSubmit = (annotation) => {
-        const { geometry, data } = annotation
+  onSubmit = (annotation) => {
+    const { geometry, data } = annotation
     
-        this.setState({
-          annotation: {},
-          annotations: this.state.annotations.concat({
-            geometry,
-            data: {
-              ...data,
-              id: Math.random()
-            }
-          })
-        })
-    }
+    //upload the annotation
+    // this.props.updateAnnotation(this.props.post.id, {data: data, geometry: geometry});
+    this.props.post.annotations.push({data: data, geometry: geometry});
+    this.props.updatePost(this.props.post.id, this.props.post);
+    this.setState({
+      annotation: {},
+      //should add key later
+      annotations: this.state.annotations.concat({
+        geometry,
+        data: {
+          ...data,
+          id: Math.random()
+        }
+      })
+    })
 
-    render () {
-        console.log(this.state);
-        return (
-            <Annotation
-            //need to convert to database image later
-            src= 'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8cGljdHVyZXxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80'
-            alt = 'Picture'
-            
-            annotations = {this.state.annotations}
-            type = {this.state.type}
-            value = {this.state.annotation}
-            onChange = {this.onChange}
-            onSubmit = {this.onSubmit}
-            allowTouch 
+    
 
-            />
-        )
-    }
+  }
+
+  render () {
+    return (
+      <Annotation
+        src={this.props.post.image}
+        alt='Two pebbles anthropomorphized holding hands'
+
+        annotations={this.state.annotations}
+
+        type={this.state.type}
+        value={this.state.annotation}
+        onChange={this.onChange}
+        onSubmit={this.onSubmit}
+        allowTouch
+      />
+    )
+  }
 }
+
+export default connect(null,{updatePost})(AddAnnotation);

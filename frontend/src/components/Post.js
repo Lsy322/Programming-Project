@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Card from '@material-ui/core/Card';
@@ -20,6 +20,10 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
 import SendIcon from '@material-ui/icons/Send';
 import VerticalMoreButton from './verticalMoreButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+
+import {useDispatch} from 'react-redux';
+import {deletePost} from '../context/action/posts';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,38 +49,43 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Post() {
+export default function Post({post}) {
   const classes = useStyles();
-  const [expanded, setExpanded] = React.useState(false);
+  
+  const [postInfo, setPostInfo] = useState(post);
+  const dispatch = useDispatch();
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
+  useEffect(()=> {
+    console.log('post info changed');
+  },[postInfo]);
+  
+
+  const handleDeleteClick = () => {
+    console.log(post);
+    dispatch(deletePost(post._id));
+  }
 
   return (
     <Card className={classes.root} >
       <CardHeader
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
-            R
+            {post.author}
           </Avatar>
         }
         action={
-          <VerticalMoreButton />
+          <VerticalMoreButton post={post} postInfo={postInfo} setPostInfo={setPostInfo}/>
         }
-        title="Shrimp and Chorizo Paella"
-        subheader="September 14, 2016"
+        title={post.title}
+        subheader={post.createAt}
       />
 
-      <CardMedia className={classes.media} image='https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8cGljdHVyZXxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80' />
-      
-          
+      <CardMedia className={classes.media} image={post.image} />
       
 
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
-          This impressive paella is a perfect party dish and a fun meal to cook together with your
-          guests. Add 1 cup of frozen peas along with the mussels, if you like.
+          {post.description}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
@@ -87,6 +96,11 @@ export default function Post() {
           <ShareIcon />
         </IconButton>
         
+        {/* should be diappear after the user authentication added */}
+        <IconButton aria-label="delete" onClick={handleDeleteClick}>
+          <DeleteIcon />
+        </IconButton>
+
       </CardActions>
       <Divider />
       <FormControl fullWidth >
