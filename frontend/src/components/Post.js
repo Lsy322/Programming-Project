@@ -24,6 +24,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import {useDispatch} from 'react-redux';
 import {deletePost} from '../context/action/posts';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -54,17 +55,18 @@ export default function Post({post}) {
   
   const [postInfo, setPostInfo] = useState(post);
   const dispatch = useDispatch();
+  const {user} = useAuth0();
 
   useEffect(()=> {
     console.log('post info changed');
   },[postInfo]);
-  
 
   const handleDeleteClick = () => {
     console.log(post);
     dispatch(deletePost(post._id));
   }
 
+  console.log(user);
   return (
     <Card className={classes.root} >
       <CardHeader

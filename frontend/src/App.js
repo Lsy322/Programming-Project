@@ -1,6 +1,5 @@
-
-import React,{useEffect} from "react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Switch, Route} from "react-router-dom";
 
 import Home from "./pages/Home";
 import CreatePost from "./pages/CreatePost";
@@ -9,13 +8,14 @@ import {
   Toolbar,
   Typography,
   Button,
-  IconButton,
+  CircularProgress,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import MenuIcon from "@material-ui/icons/Menu";
 import { useDispatch, useSelector } from "react-redux";
+import {useAuth0} from '@auth0/auth0-react';
 import { getPosts } from "./context/action/posts";
-
+import AuthenticationButton from './components/AuthButtons/authentication-button';
+import ProtectedRoute from './auth/protected-route';
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -33,48 +33,44 @@ const App = () => {
   const dispatch = useDispatch();
   const posts = useSelector((state) => state.posts);
 
-  useEffect(()=>{
-    dispatch(getPosts());  
-  },[dispatch])
+ 
+  useEffect(() => {
+    dispatch(getPosts());
+  }, [dispatch]);
+
+  const {isLoading} = useAuth0();
+  
+  if(isLoading) {
+    return <CircularProgress />
+  }
 
   return (
-      // navigation bar componen
-    <Router>
-      <div className={classes.root}>
-        <AppBar position="static">
-          <Toolbar>
-            <IconButton
-              edge="start"
-              className={classes.menuButton}
-              color="inherit"
-              aria-label="menu"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" className={classes.title}>
-              Test
-            </Typography>
-            
-            <Button variant='contained' color='primary' href='/createPost'>Create Post</Button>
+    // navigation bar componen
+    <div className={classes.root}>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" className={classes.title}>
+            Test
+          </Typography>
 
-            <Button variant='contained' color='primary' href='/'>Home</Button>
+          <Button variant="contained" color="primary" href="/createPost">
+            Create Post
+          </Button>
 
-          </Toolbar>
-        </AppBar>
-        {/* A <Switch> looks through its children <Route>s and
+          <Button variant="contained" color="primary" href="/">
+            Home
+          </Button>
+          <AuthenticationButton />
+        </Toolbar>
+      </AppBar>
+      {/* A <Switch> looks through its children <Route>s and
               renders the first one that matches the current URL. */}
-        <Switch>
-          <Route path="/createPost">
-            <CreatePost />
-          </Route>
-
-          <Route path="/">
-            <Home />
-          </Route>
-        </Switch>
-      </div>
-    </Router>
-
+      <Switch>
+        <ProtectedRoute path="/createPost" component={CreatePost} />
+        <Route path="/" exact component={Home} />
+    
+      </Switch>
+    </div>
   );
 };
 
