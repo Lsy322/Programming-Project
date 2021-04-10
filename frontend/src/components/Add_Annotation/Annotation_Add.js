@@ -18,7 +18,7 @@ class AddAnnotation extends Component {
     
     //upload the annotation
     // this.props.updateAnnotation(this.props.post.id, {data: data, geometry: geometry});
-    this.props.post.annotations.push({data: data, geometry: geometry});
+    this.props.post.annotations.push({data: data, geometry: geometry, annotation_id: Math.random()});
     this.props.updatePost(this.props.post.id, this.props.post);
     this.setState({
       annotation: {},
@@ -28,7 +28,8 @@ class AddAnnotation extends Component {
         data: {
           ...data,
           id: Math.random()
-        }
+        },
+      
       })
     })
 

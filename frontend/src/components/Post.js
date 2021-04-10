@@ -55,25 +55,20 @@ export default function Post({post}) {
   
   const [postInfo, setPostInfo] = useState(post);
   const dispatch = useDispatch();
-  const {user} = useAuth0();
 
   useEffect(()=> {
     console.log('post info changed');
   },[postInfo]);
 
   const handleDeleteClick = () => {
-    console.log(post);
     dispatch(deletePost(post._id));
   }
 
-  console.log(user);
   return (
     <Card className={classes.root} >
       <CardHeader
         avatar={
-          <Avatar aria-label="recipe" className={classes.avatar}>
-            {post.author}
-          </Avatar>
+          <Avatar aria-label="recipe" className={classes.avatar} src={post.author.picture}/>
         }
         action={
           <VerticalMoreButton post={post} postInfo={postInfo} setPostInfo={setPostInfo}/>

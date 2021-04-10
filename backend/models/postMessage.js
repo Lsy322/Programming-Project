@@ -13,7 +13,7 @@ var mongoose = require('mongoose');
 const postSchema = mongoose.Schema({
     id: mongoose.Types.ObjectId,
     title: String,
-    author: String,
+    author: Object,
     description: String,
     image: String,
     comment: [String],

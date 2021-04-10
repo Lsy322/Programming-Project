@@ -10,7 +10,7 @@ import ViewAnnotationDialog from  './View_Annotation/viewAnnotation';
 
 const options = [
     'Add annotation',
-    'View annotation',
+    'View & Delete annotation',
     'set Permission', 
 ];
 
@@ -40,7 +40,7 @@ const VerticalMoreButton = ({post,postInfo, setPostInfo}) => {
         if (e.target.textContent === 'Add annotation'){
             handleAddDialogOpen();
         }
-        else if (e.target.textContent === 'View annotation'){
+        else if (e.target.textContent === 'View & Delete annotation'){
             handleViewDialogOpen();
         }
         setAnchorEl(null);
