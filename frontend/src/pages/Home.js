@@ -24,17 +24,15 @@ function Home() {
     <div className={classes.root}>
       <Grid container spacing={5} >
         <Grid item xs={3} >
-            <Paper className={classes.paper}>xs=3</Paper>
+            <Paper className={classes.paper}>further extension</Paper>
         </Grid>
 
         <Grid item xs={5}>
-            <Paper className={classes.paper}>
-                <PostList></PostList>
-            </Paper>
+            <PostList />
         </Grid>
 
         <Grid item xs={4}>
-            <Paper className={classes.paper}>xs=4</Paper>
+            <Paper className={classes.paper}>friend system</Paper>
         </Grid>
         
       </Grid>
