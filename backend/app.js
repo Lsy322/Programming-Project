@@ -33,58 +33,6 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
 
-// testing
-
-const n2 = (n, res) =>{
-    return new Promise(resolve => {
-        for(let i = 0; i<n;i++)
-            for(let j = 0; j<n;j++)
-        resolve('resolved')
-    })
-}
-
-const calln2 = async (n, res) => {
-    console.log('calling');
-    const result = await n2(n, res)
-    console.log(result);
-}
-
-function resolveAfter2Seconds(n) {
-    return new Promise(resolve => {
-        // for(let i = 0; i<n;i++)
-        //     for(let j = 0; j<n;j++)
-        //         console.log(`${i}:${j}`)
-        // resolve('resolved');
-        setTimeout(() => {
-            resolve('resolved');
-        }, n);
-    });
-}
-
-async function asyncCall(n) {
-    console.log('calling');
-    const result = await resolveAfter2Seconds(n);
-    console.log(result);
-    // expected output: "resolved"
-}
-
-app.get('/n2/:n', ((req, res) => {
-    const n = req.params.n
-
-    //res.send('Started')
-    // calln2(n)
-    // console.log(1)
-    // calln2(n)
-    // console.log(2)
-    // calln2(n)
-    // console.log(3)
-    calln2(n).then(() => res.sendStatus(200))
-
-    //res.send('hey')
-}))
-
-//-----
-
 let chat = []
 
 const isExist = (user) => {
@@ -104,20 +52,42 @@ app.get('/liveChat/:roomId', ((req, res) => {
     res.send(req.params.roomId)
 }))
 
-io.on('connection', socket => {
-    if(false){
-        console.log('new client connected')
+io.on('connection', (socket) => {
+    socket.on('join', (roomId) => {
+        const roomClients = io.sockets.adapter.rooms[roomId] || { length: 0 }
+        const numberOfClients = roomClients.length
 
-        socket.on('join', () => {
-            console.log('hey')
-        })
+        // These events are emitted only to the sender socket.
+        if (numberOfClients == 0) {
+            console.log(`Creating room ${roomId} and emitting room_created socket event`)
+            socket.join(roomId)
+            socket.emit('room_created', roomId)
+        } else if (numberOfClients == 1) {
+            console.log(`Joining room ${roomId} and emitting room_joined socket event`)
+            socket.join(roomId)
+            socket.emit('room_joined', roomId)
+        } else {
+            console.log(`Can't join room ${roomId}, emitting full_room socket event`)
+            socket.emit('full_room', roomId)
+        }
+    })
 
-
-    }else{
-
-    }
-    socket.on('disconnect', (userName, roomId) =>{
-        console.log('client disconnected')
+    // These events are emitted to all the sockets connected to the same room except the sender.
+    socket.on('start_call', (roomId) => {
+        console.log(`Broadcasting start_call event to peers in room ${roomId}`)
+        socket.broadcast.to(roomId).emit('start_call')
+    })
+    socket.on('webrtc_offer', (event) => {
+        console.log(`Broadcasting webrtc_offer event to peers in room ${event.roomId}`)
+        socket.broadcast.to(event.roomId).emit('webrtc_offer', event.sdp)
+    })
+    socket.on('webrtc_answer', (event) => {
+        console.log(`Broadcasting webrtc_answer event to peers in room ${event.roomId}`)
+        socket.broadcast.to(event.roomId).emit('webrtc_answer', event.sdp)
+    })
+    socket.on('webrtc_ice_candidate', (event) => {
+        console.log(`Broadcasting webrtc_ice_candidate event to peers in room ${event.roomId}`)
+        socket.broadcast.to(event.roomId).emit('webrtc_ice_candidate', event)
     })
 })
 
