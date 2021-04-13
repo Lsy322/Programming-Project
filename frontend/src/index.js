@@ -13,8 +13,7 @@ import Auth0ProviderWithHistory from "./auth/auth0-provider-with-history";
 const store = createStore(
   reducers,
   compose(
-    applyMiddleware(thunk),
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+    applyMiddleware(thunk)
   )
 );
 

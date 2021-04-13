@@ -16,7 +16,7 @@ const postSchema = mongoose.Schema({
     author: Object,
     description: String,
     image: String,
-    comment: [String],
+    comments: [Object],
     annotations: [Object],
     likeCount: {
         type:Number,

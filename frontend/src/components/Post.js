@@ -7,25 +7,22 @@ import CardMedia from "@material-ui/core/CardMedia";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import Divider from "@material-ui/core/Divider";
-import FormControl from "@material-ui/core/FormControl";
-import Input from "@material-ui/core/Input";
-import InputLabel from "@material-ui/core/InputLabel";
-import InputAdornment from "@material-ui/core/InputAdornment";
+
 import Avatar from "@material-ui/core/Avatar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import { red } from "@material-ui/core/colors";
-
+import Comments from "./comments/comments";
+import CommentBox from "./comments/commentBox";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import ShareIcon from "@material-ui/icons/Share";
-import SendIcon from "@material-ui/icons/Send";
+
 import VerticalMoreButton from "./verticalMoreButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 import { useDispatch } from "react-redux";
 import { deletePost } from "../context/action/posts";
 import { useAuth0 } from "@auth0/auth0-react";
-
 const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: "10px",
@@ -60,14 +57,14 @@ export default function Post({ post }) {
     console.log("post info changed");
   }, [postInfo]);
 
-  const { isAuthenticated, user } = useAuth0();
+  const { isAuthenticated, user} = useAuth0();
 
   const handleDeleteClick = () => {
     dispatch(deletePost(post._id));
   };
 
-  console.log(post.author);
-  console.log(user);
+
+
   return (
     <Card className={classes.root}>
       <CardHeader
@@ -116,22 +113,9 @@ export default function Post({ post }) {
       <Divider />
 
       {/* COMMENT LIMITATION */}
-      {isAuthenticated ? (
-        <FormControl fullWidth>
-          <InputLabel htmlFor="comment">comments on the post</InputLabel>
-          <Input
-            id="comment"
-            //value should be made later
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton aria-label="comment button">
-                  <SendIcon />
-                </IconButton>
-              </InputAdornment>
-            }
-          />
-        </FormControl>
-      ) : null}
+      {isAuthenticated ? <CommentBox post={post} /> : null}
+
+      <Comments post={post} />
     </Card>
   );
 }
