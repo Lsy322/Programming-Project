@@ -26,7 +26,10 @@ const postSchema = mongoose.Schema({
         type: Date,
         default: Date.now()
     },
-    
+    permission:{
+        type: [String],
+        default: ["all"]
+    }
 });
 
 const PostMessage = mongoose.model('posts',postSchema);
