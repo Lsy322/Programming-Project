@@ -68,6 +68,10 @@ export default function Post({ post }) {
 
   console.log(post.author);
   console.log(user);
+
+  var time = new Date(post.createAt); //time Convertion
+  var timeString = time.toString();
+
   return (
     <Card className={classes.root}>
       <CardHeader
@@ -88,7 +92,7 @@ export default function Post({ post }) {
           ) : null
         }
         title={post.title}
-        subheader={post.createAt}
+        subheader={timeString}
       />
 
       <CardMedia className={classes.media} image={post.image} />
