@@ -47,6 +47,9 @@ class ViewAnnotation extends Component {
   onClick = (id) => e => {
     this.props.post.annotations = this.props.post.annotations.filter(annotation => annotation.annotation_id !== id);
     this.props.updatePost(this.props.post.id, this.props.post);
+    this.setState({
+        annotations: this.state.annotations.filter(annotation => annotation.annotation_id !== id),
+    })
   }
   render() {
 
