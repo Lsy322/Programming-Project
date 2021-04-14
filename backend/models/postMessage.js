@@ -27,8 +27,9 @@ const postSchema = mongoose.Schema({
         default: Date.now()
     },
     permission:{
-        type: [String],
-        default: ["all"]
+        annotationPermission: {type: Boolean, default: true},
+        viewPermission: {type: Boolean, default: false},
+        commentPermission: {type: Boolean, default: true},
     }
 });
 

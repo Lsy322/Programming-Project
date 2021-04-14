@@ -63,8 +63,7 @@ export default function Post({ post }) {
     dispatch(deletePost(post._id));
   };
 
-  console.log(post.author);
-  console.log(user);
+ 
 
   var time = new Date(post.createAt); //time Convertion
   var timeString = time.toString();
@@ -117,7 +116,7 @@ export default function Post({ post }) {
       <Divider />
 
       {/* COMMENT LIMITATION */}
-      {isAuthenticated ? <CommentBox post={post} /> : null}
+      {isAuthenticated && post.permission.commentPermission ? <CommentBox post={post} /> : null}
 
       <Comments post={post} />
     </Card>
