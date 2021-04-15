@@ -1,5 +1,4 @@
 var express = require('express');
-const { updatePost, getPreferPost } = require('../controllers/posts.js');
 
 var postController = require('../controllers/posts.js')
 

@@ -1,5 +1,6 @@
 var PostMessage = require('../models/postMessage.js');
-var ObjectId = require('mongodb').ObjectID;
+var user = require('../models/user.js');
+const { post } = require('../routes/user.js');
 
 module.exports =  
 {getPosts : async (req, res) => {
@@ -18,7 +19,7 @@ createPost : async (req, res) => {
         await newPost.save();
         res.status(201).json(newPost);
     }catch (err){
-        res.status(409).json({msg:"error Message"});
+        res.status(409).json(err);
     }
 },
 
@@ -64,9 +65,14 @@ getPostsById: async (req,res)=>{
 },
 getPreferPost: async (req,res)=>{
     try{
-        const postMessage = await PostMessage.find({permission:{"$in":["all",req.body.sub]}}).sort({createAt:-1})
+        const uid = req.body.sub
+        const currentUser = await user.find({"user.sub":uid})
+        var requestId = currentUser[0].friends
+        var postMessage = await PostMessage.find({$or:[{"author.sub":uid},{"author.sub":{$in: requestId}},{"permission.viewPermission":false}]}).sort({createAt:-1})
+        console.log(postMessage.length)
         res.json(postMessage)
-    }catch (err){
+    }
+    catch (err){
         res.json({message:err})
     }
 }

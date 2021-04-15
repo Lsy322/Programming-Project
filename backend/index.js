@@ -4,6 +4,7 @@ var cors = require("cors");
 
 //router Import
 var postRoutes = require('./routes/posts.js');
+var userRoutes = require('./routes/user.js')
 
 
 
@@ -13,6 +14,7 @@ app.use(express.urlencoded({limit:"30mb", extended: true}));
 app.use(cors()); 
 
 app.use('/post',postRoutes);
+app.use('/user',userRoutes);
 
 
 const CONNECTION_URL = "mongodb+srv://mark:hkccpp@clips.ipkvx.mongodb.net/clips?retryWrites=true&w=majority";
