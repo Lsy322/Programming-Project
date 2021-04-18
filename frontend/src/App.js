@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Switch, Route} from "react-router-dom";
 
 import Home from "./pages/Home";
+import Profile from './pages/Profile';
 import CreatePost from "./pages/CreatePost";
 import {
   AppBar,
@@ -16,6 +17,8 @@ import {useAuth0} from '@auth0/auth0-react';
 import { getPosts } from "./context/action/posts";
 import AuthenticationButton from './components/AuthButtons/authentication-button';
 import ProtectedRoute from './auth/protected-route';
+
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -33,6 +36,7 @@ const App = () => {
   const dispatch = useDispatch();
   const posts = useSelector((state) => state.posts);
 
+  const {user, isAuthenticated} = useAuth0();
  
   useEffect(() => {
     dispatch(getPosts());
@@ -53,6 +57,14 @@ const App = () => {
             Test
           </Typography>
 
+          {
+            isAuthenticated ? 
+           (<Button variant='contained' color='primary' href={`/profile/${user.sub}`}>
+              Profile
+            </Button>) : null
+          }
+          
+
           <Button variant="contained" color="primary" href="/createPost">
             Create Post
           </Button>
@@ -66,6 +78,11 @@ const App = () => {
       {/* A <Switch> looks through its children <Route>s and
               renders the first one that matches the current URL. */}
       <Switch>
+      {isAuthenticated ? (
+        <ProtectedRoute path={`/profile/:id`} component={Profile}>
+        </ProtectedRoute>
+      ): null}
+        
         <ProtectedRoute path="/createPost" component={CreatePost} />
         <Route path="/" exact component={Home} />
     

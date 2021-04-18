@@ -15,9 +15,9 @@ var TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im5LcjA1dGw0NXNrMVpDc3V
 module.exports =  
 {
 getUser: async (req,res)=>{
-    var doc = await userCollection.findOne({_id:mongoose.Types.ObjectId(req.body.id)})
+    var doc = await userCollection.findOne({_id:mongoose.Types.ObjectId(req.params.id)})
     var options = { method: 'GET',
-    url: 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/'+ "auth0|" + req.body.id,
+    url: 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/'+ "auth0|" + req.params.id,
     headers: { 'authorization':'Bearer ' + TOKEN, 'content-type': 'application/json' },
     body: {},
     json:true};

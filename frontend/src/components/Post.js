@@ -19,10 +19,13 @@ import ShareIcon from "@material-ui/icons/Share";
 
 import VerticalMoreButton from "./verticalMoreButton";
 import DeleteIcon from "@material-ui/icons/Delete";
+import PersonIcon from "@material-ui/icons/Person";
 
 import { useDispatch } from "react-redux";
 import { deletePost } from "../context/action/posts";
 import { useAuth0 } from "@auth0/auth0-react";
+import {useHistory} from 'react-router-dom';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: "10px",
@@ -52,21 +55,20 @@ export default function Post({ post }) {
 
   const [postInfo, setPostInfo] = useState(post);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    console.log("post info changed");
-  }, [postInfo]);
-
-  const { isAuthenticated, user} = useAuth0();
+  const history = useHistory();
+  const { isAuthenticated, user } = useAuth0();
 
   const handleDeleteClick = () => {
     dispatch(deletePost(post._id));
   };
-
- 
+  
+  const handleProfileClick = () => {
+    history.push(`/profile/${post.author.sub}`);
+  }
 
   var time = new Date(post.createAt); //time Convertion
   var timeString = time.toString();
+
 
   return (
     <Card className={classes.root}>
@@ -102,9 +104,17 @@ export default function Post({ post }) {
         <IconButton aria-label="add to favorites">
           <FavoriteIcon />
         </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
+
+        <IconButton aria-label="profile" onClick={handleProfileClick}>
+          <PersonIcon />
         </IconButton>
+
+        {/* REPOST ICON */}
+        {isAuthenticated && !post.permission.viewPermission ? (
+          <IconButton aria-label="share">
+            <ShareIcon />
+          </IconButton>
+        ) : null}
 
         {/* DELETE ICON */}
         {isAuthenticated && user.sub === post.author.sub ? (
@@ -116,7 +126,9 @@ export default function Post({ post }) {
       <Divider />
 
       {/* COMMENT LIMITATION */}
-      {isAuthenticated && post.permission.commentPermission ? <CommentBox post={post} /> : null}
+      {isAuthenticated && post.permission.commentPermission ? (
+        <CommentBox post={post} />
+      ) : null}
 
       <Comments post={post} />
     </Card>
