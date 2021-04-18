@@ -9,3 +9,4 @@ export const deletePost = (id) => axios.delete(`${url_posts}/${id}/delete`);
 
 const url_user = 'http://localhost:5000/user';
 export const getUser = (id) => axios.get(`${url_user}/${id}`);
+export const deleteUser = (id) => axios.delete(`${url_user}/delete/${id}`);

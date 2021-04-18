@@ -12,7 +12,7 @@ const Profile = () => {
     friends: [],
   });
 
-  const { user } = useAuth0();
+  const { user, logout } = useAuth0();
   const {id} = useParams();
 
   useEffect(() => {
@@ -22,9 +22,18 @@ const Profile = () => {
         const {data} = await api.getUser(id_to_be_parsed);
         setUserInfo(data);
    }
-   console.log(id);
    getAuth0User(id);
   }, []);
+
+
+  const handleDeleteUserClick = async() => {      
+    const id_to_be_deleted = id.substring(6);
+    logout({
+        returnTo: window.location.origin,
+      });
+    const {data} = await api.deleteUser(id_to_be_deleted);
+    console.log(data);
+  }
 
   return (
     <Box m={1}>
@@ -34,7 +43,7 @@ const Profile = () => {
       <Typography>{userinfo.friends.length}</Typography>
       {/* Render deletion of itself or add friend request */}
       {user.sub === userinfo.user_id ? (
-        <Button variant="contained" color="primary">
+        <Button variant="contained" color="primary" onClick={handleDeleteUserClick}>
           Delete User
         </Button>
       ) : (
