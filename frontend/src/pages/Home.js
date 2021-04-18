@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Home() {
   const classes = useStyles();
-  const { user } = useAuth0();
+  const { user, isAuthenticated } = useAuth0();
 
   useEffect(() => {
     async function findUser() {
@@ -28,10 +28,13 @@ function Home() {
       console.log(data);
     }
 
-    findUser();
-  }, []);
+    if (isAuthenticated){
+      findUser();
+    }
+    
+  }, [user]);
 
-  
+
   return (
     <div className={classes.root}>
       <Grid container spacing={5}>
