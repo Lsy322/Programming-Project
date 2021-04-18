@@ -5,19 +5,20 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const fileUpload = require('express-fileupload');
+
 const Post = require('./models/Posts');
-const fs = require('fs');
+const ChatRooms = require('./models/ChatRooms');
+const Messages = require('./models/Messages');
+
 const http = require('http');
 const server = http.createServer(app);
 const socketio = require('socket.io');
 const io = socketio(server, {
     cors: {
-        origin: "http://localhost:3000"
+        //origin: "http://localhost:3000"
     }
 });
-const   { v4: uuidv4 } = require('uuid');
-
-//<username>:<password>@clips.ipkvx.mongodb.net/<database name>?retryWrites=true&w=majority
+const { v4: uuidv4 } = require('uuid');
 
 const dbUrl = 'mongodb+srv://mark:hkccpp@clips.ipkvx.mongodb.net/clips?retryWrites=true&w=majority';
 //for stopping warning
@@ -33,62 +34,107 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
 
-let chat = []
 
-const isExist = (user) => {
-    if(chat.includes(user))
-        console.log(chat)
-}
-isExist(7)
-app.get('/liveChat/createRoom', ((req, res) => {
-    //let
-    console.log(req.body.userName)
-    //if(isExist(req.body.userName))
-    res.redirect(`/liveChat/${uuidv4()}`)
+let users = [
+    { user: "user1"},
+    { user: "user2"},
+    { user: "user3"},
+    { user: 'user4'}
+]
+
+app.get('/chat/getRooms/:user', ((req, res) => {
+    ChatRooms.find({users: {$elemMatch:{user:req.params.user}}})
+        .then((result) => res.send(result))
+        .catch((err) => console.log(err))
 }))
 
+app.get('/chat/getRoomData/:roomId', ((req, res) => {
+    ChatRooms.findById({_id: req.params.roomId})
+        .then((result) => res.send(result))
+        .catch((err) => console.log(err))
+}))
 
-app.get('/liveChat/:roomId', ((req, res) => {
-    res.send(req.params.roomId)
+app.post('/chat/createRoom', ((req, res) => {
+    let index;
+
+    for(i = 0; i < users.length;i++){
+        if(req.body.user == users[i].user)
+            index = i
+    }
+
+    const chatRoom = new ChatRooms({
+        title: req.body.roomTitle,
+        users: users[index]
+    })
+
+
+    chatRoom.save()
+        .then((result) => res.send(result))
+        .catch((err) => console.log(err))
+}))
+
+app.put('/chat/addUser',((req, res) => {
+
+    ChatRooms.find({$and: [
+            {_id: req.body.roomId},
+            {users: {$elemMatch:{user:req.body.user}}}
+        ]})
+        .then(result => {
+            if(result.length == 0){
+
+                let index;
+
+                for(i = 0; i < users.length;i++){
+                    if(req.body.user == users[i].user)
+                        index = i
+                }
+                if(index >= 0){
+                    ChatRooms.findByIdAndUpdate({_id: req.body.roomId}, {$push: {users: users[index]}})
+                        .then(result => res.send('added'))
+                        .catch(err => console.log(err))
+                }else{
+                    res.send('user not exists')
+                }
+            }else{
+                res.send('user already added')
+            }
+        })
+
+}))
+
+app.put('/chat/sendMessage', ((req, res) => {
+
+    const message = new Messages({
+        author: req.body.author,
+        message: req.body.message
+    })
+    message.save()
+        .then(() => {
+            ChatRooms.findByIdAndUpdate({_id: req.body.roomId}, {$push: {messages: message}})
+                .then((result) => res.send(result))
+                .catch((err) => console.log(err))
+        })
 }))
 
 io.on('connection', (socket) => {
-    socket.on('join', (roomId) => {
-        const roomClients = io.sockets.adapter.rooms[roomId] || { length: 0 }
-        const numberOfClients = roomClients.length
+    const roomId = socket.handshake.query.roomId
+    socket.join(roomId)
+    socket.on('update', (roomId) =>{
+        ChatRooms.findById({_id: roomId})
+            .then((result) => {
+                io.in(roomId).emit('update', result)
+            })
+            .catch((err) => console.log(err))
 
-        // These events are emitted only to the sender socket.
-        if (numberOfClients == 0) {
-            console.log(`Creating room ${roomId} and emitting room_created socket event`)
-            socket.join(roomId)
-            socket.emit('room_created', roomId)
-        } else if (numberOfClients == 1) {
-            console.log(`Joining room ${roomId} and emitting room_joined socket event`)
-            socket.join(roomId)
-            socket.emit('room_joined', roomId)
-        } else {
-            console.log(`Can't join room ${roomId}, emitting full_room socket event`)
-            socket.emit('full_room', roomId)
-        }
     })
 
-    // These events are emitted to all the sockets connected to the same room except the sender.
-    socket.on('start_call', (roomId) => {
-        console.log(`Broadcasting start_call event to peers in room ${roomId}`)
-        socket.broadcast.to(roomId).emit('start_call')
+    socket.on('disconnect', () => {
+        console.log('Client '+socket.id+' disconnected')
+        socket.leave(roomId)
     })
-    socket.on('webrtc_offer', (event) => {
-        console.log(`Broadcasting webrtc_offer event to peers in room ${event.roomId}`)
-        socket.broadcast.to(event.roomId).emit('webrtc_offer', event.sdp)
-    })
-    socket.on('webrtc_answer', (event) => {
-        console.log(`Broadcasting webrtc_answer event to peers in room ${event.roomId}`)
-        socket.broadcast.to(event.roomId).emit('webrtc_answer', event.sdp)
-    })
-    socket.on('webrtc_ice_candidate', (event) => {
-        console.log(`Broadcasting webrtc_ice_candidate event to peers in room ${event.roomId}`)
-        socket.broadcast.to(event.roomId).emit('webrtc_ice_candidate', event)
-    })
+
+
+
 })
 
 
@@ -164,7 +210,6 @@ app.post('/createPost', ((req, res) => {
         .then((result) => {res.send(result)} )
         .catch((err)=>console.log(err));
 }))
-
 
 app.get('/', function (req,res){
     res.send('hello world')
