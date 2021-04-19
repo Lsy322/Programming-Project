@@ -8,6 +8,9 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
+//FRIENDS AND FRIENDREQUESTS COMPONENTS
+import FriendList from './Friends/FriendList';
+import RequestList from './Friend_requests/RequestList';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -83,10 +86,10 @@ export default function FullWidthTabs() {
         onChangeIndex={handleChangeIndex}
       >
         <TabPanel value={value} index={0} dir={theme.direction}>
-          Friends components
+          <FriendList />
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
-          Friend requests components
+          <RequestList />
         </TabPanel>
        
       </SwipeableViews>

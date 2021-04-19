@@ -3,7 +3,9 @@ import { Avatar, Box, Button, Typography } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import {useParams} from 'react-router-dom';
 import * as api from '../context/api/index';
-
+import {addFriendRequest, deleteUser} from '../context/action/User';
+import {useDispatch} from 'react-redux';
+import { getFriend, getFriendRequest } from "../context/action/FriendSystem";
 const Profile = () => {
   const [userinfo, setUserInfo] = useState({
     nickname: "",
@@ -12,7 +14,9 @@ const Profile = () => {
     friends: [],
   });
 
-  const { user, logout } = useAuth0();
+  const { user, logout} = useAuth0();
+  const dispatch = useDispatch();
+  //Target ID of rendering the profile page
   const {id} = useParams();
 
   useEffect(() => {
@@ -25,15 +29,22 @@ const Profile = () => {
    getAuth0User(id);
   }, []);
 
-
+  //NEED TO IMPLEMENT IN REDUX LATER
   const handleDeleteUserClick = async() => {      
     const id_to_be_deleted = id.substring(6);
     logout({
         returnTo: window.location.origin,
       });
-    const {data} = await api.deleteUser(id_to_be_deleted);
-    console.log(data);
+    dispatch(deleteUser(id_to_be_deleted));
   }
+
+  const handleAddFriendClick = async() => {
+      const user_id_to_be_sent = user.sub.substring(6);
+      const target_id_to_be_sent = id.substring(6);
+      dispatch(addFriendRequest(user_id_to_be_sent,target_id_to_be_sent));
+      console.log('friend added');
+   }
+
 
   return (
     <Box m={1}>
@@ -43,11 +54,11 @@ const Profile = () => {
       <Typography>{userinfo.friends.length}</Typography>
       {/* Render deletion of itself or add friend request */}
       {user.sub === userinfo.user_id ? (
-        <Button variant="contained" color="primary" onClick={handleDeleteUserClick}>
+        <Button variant="contained" color="secondary" onClick={handleDeleteUserClick}>
           Delete User
         </Button>
       ) : (
-        <Button variant="contained">Add Friend</Button>
+        <Button variant="contained" color='primary' onClick={handleAddFriendClick}>Add Friend</Button>
       )}
 
       {/* Render all post of the user */}

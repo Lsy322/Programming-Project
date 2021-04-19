@@ -23,8 +23,6 @@ const useStyles = makeStyles((theme) => ({
 const PostList = () => {
   //the state have to be confirmed
   const posts = useSelector((state) => state.posts);
-  
-  const testPost = useSelector((state) => state.testPost);
   const classes = useStyles();
   console.log(posts);
   

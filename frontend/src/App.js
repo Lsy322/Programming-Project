@@ -15,8 +15,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch, useSelector } from "react-redux";
 import {useAuth0} from '@auth0/auth0-react';
 import { getPosts } from "./context/action/posts";
+import {getUser} from './context/action/User';
 import AuthenticationButton from './components/AuthButtons/authentication-button';
 import ProtectedRoute from './auth/protected-route';
+import { getFriend, getFriendRequest } from "./context/action/FriendSystem";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -35,12 +37,16 @@ const App = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const posts = useSelector((state) => state.posts);
-
   const {user, isAuthenticated} = useAuth0();
  
   useEffect(() => {
     dispatch(getPosts());
-  }, [dispatch]);
+    if (isAuthenticated){
+      dispatch(getUser(user.sub.substring(6)));
+      dispatch(getFriend(user.sub.substring(6)));
+      dispatch(getFriendRequest(user.sub.substring(6)));
+    }
+  }, [dispatch, isAuthenticated]);
 
   const {isLoading} = useAuth0();
   

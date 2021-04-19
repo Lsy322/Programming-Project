@@ -7,6 +7,8 @@ import { getUser } from "../context/api/index";
 import PostList from "../components/PostList";
 import FullWidthTabs from "../components/Friend_Tab/Tab";
 
+import {useSelector} from 'react-redux';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -21,19 +23,10 @@ function Home() {
   const classes = useStyles();
   const { user, isAuthenticated } = useAuth0();
 
-  useEffect(() => {
-    async function findUser() {
-      const id_to_be_sent = user.sub.substring(6);
-      const { data } = await getUser(id_to_be_sent);
-      console.log(data);
-    }
-
-    if (isAuthenticated){
-      findUser();
-    }
-    
-  }, [user]);
-
+  //USER INFORMATION
+  const reduxUser = useSelector((state) => state.user);
+  //USER FRIEND MANAGEMENT
+  console.log(reduxUser);
 
   return (
     <div className={classes.root}>
