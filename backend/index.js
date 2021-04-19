@@ -1,6 +1,7 @@
 var express = require('express');
 var mongoose = require("mongoose");
 var cors = require("cors");
+var request = require("request")
 
 //router Import
 var postRoutes = require('./routes/posts.js');
@@ -15,7 +16,6 @@ app.use(cors());
 
 app.use('/post',postRoutes);
 app.use('/user',userRoutes);
-
 
 const CONNECTION_URL = "mongodb+srv://mark:hkccpp@clips.ipkvx.mongodb.net/clips?retryWrites=true&w=majority";
 const PORT = process.env.PORT || 5000;

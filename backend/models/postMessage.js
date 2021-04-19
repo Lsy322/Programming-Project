@@ -24,7 +24,7 @@ const postSchema = mongoose.Schema({
     },
     createAt: {
         type: Date,
-        default: Date.now()
+        default: new Date()
     },
     permission:{
         annotationPermission: {type: Boolean, default: true},

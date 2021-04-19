@@ -19,6 +19,7 @@ module.exports =
 createPost : async (req, res) => {
     const post = req.body;
     const newPost = new PostMessage(post);
+    newPost.createAt = Date.now();
     try{
         await newPost.save();
         res.status(201).json(newPost);
