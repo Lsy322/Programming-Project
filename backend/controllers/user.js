@@ -162,18 +162,26 @@ deleteUser: async (req,res)=>{
 },
 getFriends: async (req,res)=>{
     var doc = await userCollection.findOne({_id:mongoose.Types.ObjectId(req.params.id)})
-    getToken().then((data)=>{
-        Mutifetch(doc.friends,data.access_token).then((data)=>{
-            res.json(data)
+    if (doc.friends.length == 0){
+        res.json({message:"No friends available to be fetched"})
+    }else{
+        getToken().then((data)=>{
+            Mutifetch(doc.friends,data.access_token).then((data)=>{
+                res.json(data)
+            })
         })
-    })
+    }
 },
 getFriendRequest: async (req,res) =>{
     var doc = await userCollection.findOne({_id:mongoose.Types.ObjectId(req.params.id)})
-    getToken().then((data)=>{
-        Mutifetch(doc.friendRequest,data.access_token).then((data)=>{
-            res.json(data)
+    if (doc.friendRequest.length == 0){
+        res.json({message:"No pending request"})
+    }else{
+        getToken().then((data)=>{
+            Mutifetch(doc.friendRequest,data.access_token).then((data)=>{
+                res.json(data)
+            })
         })
-    })
+    }
 }
 };
