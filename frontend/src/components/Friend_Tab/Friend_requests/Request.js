@@ -12,16 +12,11 @@ const Request = ({request}) => {
         const userid_to_be_sent = user.user_id.substring(6);
         const acceptId_to_be_sent = request.user_id.substring(6);
         dispatch(acceptFriendRequest(userid_to_be_sent,acceptId_to_be_sent));
-        dispatch(getFriend(userid_to_be_sent));
-        dispatch(getFriendRequest(userid_to_be_sent));
     }
    
     const handleDeclineFriendClick = () => {
-        console.log('decline');
-    }
-    const userid_to_be_sent = user.user_id.substring(6);
-    const acceptId_to_be_sent = request.user_id.substring(6);
-    console.log(userid_to_be_sent, acceptId_to_be_sent);
+        const userid_to_be_sent = user.user_id    }
+    
     return (
         <ListItem>
             <ListItemAvatar>
