@@ -114,9 +114,6 @@ removeFriend: async (req,res)=>{
                 }
                 array.splice(key,1)
                 SinglefetchWithdata(uid, data.access_token,'PATCH', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/',{user_metadata:{friends:array}})
-                .then((endResult)=>{
-                    res.json(endResult)
-                })
             })
             Singlefetch(aid, data.access_token,'GET', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/')
             .then((result)=>{
@@ -128,6 +125,9 @@ removeFriend: async (req,res)=>{
                 }
                 array.splice(key,1)
                 SinglefetchWithdata(uid, data.access_token,'PATCH', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/',{user_metadata:{friends:array}})
+                .then((endResult)=>{
+                    res.json(endResult)
+                })
             })
         })
 },
