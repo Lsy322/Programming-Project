@@ -1,10 +1,12 @@
 var PostMessage = require('../models/postMessage.js');
-// var user = require('../models/user.js');
-const { post } = require('../routes/user.js');
-var mongoose = require("mongoose")
-const db = mongoose.connect("mongodb+srv://mark:hkccpp@clips.ipkvx.mongodb.net/clips?retryWrites=true&w=majority",{useNewUrlParser:true,useUnifiedTopology:true});
-const client = mongoose.connection;
-const user = client.collection("user")
+var authApi = require('./auth0.js')
+
+const prefix = "auth0|"
+
+const getToken = authApi.getToken
+const Singlefetch = authApi.Singlefetch
+const SinglefetchWithdata = authApi.Mutifetch
+const Mutifetch = authApi.Mutifetch
 
 module.exports =  
 {getPosts : async (req, res) => {
@@ -71,11 +73,16 @@ getPostsById: async (req,res)=>{
 getPreferPost: async (req,res)=>{
     try{
         const uid = req.body.sub
-        const currentUser = await user.findOne({_id:mongoose.Types.ObjectId(uid)})
-        var requestId = currentUser.friends
-        var postMessage = await PostMessage.find({$or:[{"author.sub":uid},{"author.sub":{$in: requestId}},{"permission.viewPermission":false}]}).sort({createAt:-1})
-        console.log(postMessage.length)
-        res.json(postMessage)
+        getToken()
+        .then((data)=>{
+            Singlefetch(uid, data.access_token, 'GET' ,"https://dev-1ksx3uq3.us.auth0.com/api/v2/users/")
+            .then(async (result)=>{
+                var requestId = result.user_metadata.friends
+                var postMessage = await PostMessage.find({$or:[{"author.sub":uid},{"author.sub":{$in: requestId}},{"permission.viewPermission":false}]}).sort({createAt:-1})
+                console.log(postMessage.length)
+                res.json(postMessage)
+            })
+        })
     }
     catch (err){
         res.send(err)
