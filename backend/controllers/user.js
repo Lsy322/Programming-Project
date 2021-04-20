@@ -31,16 +31,60 @@ const getToken = () =>{
 //#endregion
 
 //#region fetch
-const Mutifetch = (friendArray,TOKEN) =>{
+const Singlefetch = (fetchId, TOKEN, METHOD, URL) =>{
+    return new Promise(function (resolve,reject){
+        var element = fetchId
+        if (element.indexOf(prefix) == -1){
+             element = prefix + fetchId
+        }
+        var options = { method: METHOD,
+        url: URL + element,
+        headers: { 'authorization':'Bearer ' + TOKEN , 'content-type': 'application/json' },
+        body: {},
+        json:true};
+    
+        request(options, function (error, response, body) {
+        if (error) {
+            reject(error)
+        }else{
+            resolve(body)
+        }
+        }) 
+    })
+}
+
+const SinglefetchWithdata = (fetchId, TOKEN, METHOD, URL, DATA) =>{
+    return new Promise(function (resolve,reject){
+        var element = fetchId
+        if (element.indexOf(prefix) == -1){
+             element = prefix + fetchId
+        }
+        var options = { method: METHOD,
+        url: URL + element,
+        headers: { 'authorization':'Bearer ' + TOKEN, 'content-type': 'application/json' },
+        body: DATA,
+        json:true};
+    
+        request(options, function (error, response, body) {
+        if (error) {
+            reject(error)
+        }else{
+            resolve(body)
+        }
+        }) 
+    })
+}
+
+const Mutifetch = (IdArray, TOKEN, METHOD, URL) =>{
     var fetchedArray = []
     return new Promise(function (resolve,reject){
-        for (let index = 0; index < friendArray.length; index++) {
-            var element = friendArray[index];
+        for (let index = 0; index < IdArray.length; index++) {
+            var element = IdArray[index];
             if (element.indexOf(prefix) == -1){
                 element = prefix + element
             }
-            var options = { method: 'GET',
-            url: 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/'+ element,
+            var options = { method: METHOD,
+            url: URL + element,
             headers: { 'authorization':'Bearer ' + TOKEN, 'content-type': 'application/json' },
             body: {},
             json:true};
@@ -50,8 +94,7 @@ const Mutifetch = (friendArray,TOKEN) =>{
                 reject(error)
             }else{
                 fetchedArray.push(body)
-                if (fetchedArray.length == friendArray.length){
-                    console.log(fetchedArray.length)
+                if (fetchedArray.length == IdArray.length){
                     resolve(fetchedArray)
                 }
             }
@@ -64,159 +107,155 @@ const Mutifetch = (friendArray,TOKEN) =>{
 module.exports =  
 {
 getUser: async (req,res)=>{
-    if (!mongoose.isValidObjectId(req.params.id)){
-        res.json({message:"Can't parse such id"})
-        return;
-    }
-    var doc = await userCollection.findOne({_id:mongoose.Types.ObjectId(req.params.id)})
-    if (doc == null){
-        res.json({message:"No such user"})
-        return;
-    }
+    var key = req.params.id
     getToken().then((data)=>{
-        TOKEN = data.access_token
-        if (doc != null){
-            var options = { method: 'GET',
-            url: 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/'+ prefix + req.params.id,
-            headers: { 'authorization':'Bearer ' + TOKEN, 'content-type': 'application/json' },
-            body: {},
-            json:true};
-             request(options, function (error, response, body) {
-                if (error) throw new Error(error);
-                body.friends = doc.friends;
-                body.friendRequest = doc.friendRequest;
-                res.json(body);
-            });
-        }else{
-            res.json({message:"No such user"})
-        }
+        Singlefetch(key, data.access_token, 'GET', "https://dev-1ksx3uq3.us.auth0.com/api/v2/users/")
+        .then((result)=>{
+            res.json(result)
+        })
     })
 },
 addFriendRequest: async (req,res)=>{
-    try{
-        const rkey = req.body.RecieveId
-        const skey = req.body.SendId
-        const friendCheck = await userCollection.findOne({_id:mongoose.Types.ObjectId(rkey),friends:prefix + skey})
-        if (friendCheck != null){
-            res.json({message:"Request can't be sent to a friend"})
-            return;
-        }
-
-        const requestCheck = await userCollection.findOne({_id:mongoose.Types.ObjectId(rkey),friendRequest:skey})
-        if (requestCheck == null){
-            userCollection.updateOne({_id:mongoose.Types.ObjectId(rkey)},{$push:{friendRequest:skey}})
-            res.json({message:"Request added"})
-        }else{
-            res.json({message:"Request already exist"})
-        }
-        
-    }catch (err){
-        res.json(err)
-    }
+    const rkey = prefix + req.body.RecieveId
+    const skey = prefix + req.body.SendId
+        getToken()
+        .then((data)=>{
+            Singlefetch(rkey, data.access_token,'GET', "https://dev-1ksx3uq3.us.auth0.com/api/v2/users/")
+            .then((result)=>{
+                var key1 = result.user_metadata.friendRequest.indexOf(skey)
+                var key2 = result.user_metadata.friends.indexOf(skey)
+                if (key1 != -1){
+                    res.json({message:"Request already sent"})
+                    return;
+                }
+                if (key2 != -1){
+                    res.json({message:"The target user is already added as friend"})
+                    return;
+                }
+                result.user_metadata.friendRequest.push(skey)
+                SinglefetchWithdata(rkey, data.access_token,'PATCH', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/',{user_metadata:{friendRequest:result.user_metadata.friendRequest}})
+                .then((endResult)=>{
+                    res.json(endResult)
+                })
+            })
+        })
 },
 removeFriendRequest: async(req,res)=>{
-    try{
-        const rkey = req.body.RecieveId
-        const skey = req.body.RemoveId
-        const check = await userCollection.findOne({_id:mongoose.Types.ObjectId(rkey),friendRequest:skey})
-        if (check != null){
-            userCollection.updateOne({_id:mongoose.Types.ObjectId(rkey)},{$pull:{friendRequest:skey}})
-            res.json({message:"Request removed"})
-        }else{
-            res.json({message:"No such request to remove"})
-        }
-    }catch(err){
-        res.json(err)
-    }
+        const rkey = prefix + req.body.RecieveId
+        const skey = prefix + req.body.RemoveId
+        getToken()
+        .then((data)=>{
+            Singlefetch(rkey, data.access_token,'GET', "https://dev-1ksx3uq3.us.auth0.com/api/v2/users/")
+            .then((result)=>{
+                var array = result.user_metadata.friendRequest
+                var key = array.indexOf(skey)
+                if (key == -1){
+                    res.json({message:"No such request"})
+                    return;
+                }
+                array.splice(key,1)
+                SinglefetchWithdata(rkey, data.access_token,'PATCH', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/',{user_metadata:{friendRequest:array}})
+                .then((endResult)=>{
+                    res.json(endResult)
+                })
+            })
+        })
 },
 acceptFriendRequest: async (req,res)=>{
-    try{
-        const uid = req.body.uid
-        const aid = req.body.acceptedId
-        const check = await userCollection.findOne({_id:mongoose.Types.ObjectId(uid),friendRequest:aid})
-        if (check != null){
-            userCollection.updateOne({_id:mongoose.Types.ObjectId(uid)},{$push:{friends:prefix+ aid},$pull:{friendRequest:aid}})
-            userCollection.updateOne({_id:mongoose.Types.ObjectId(aid)},{$push:{friends:prefix+uid}})
-            res.json({message:"Friend request accepted"})
-        }else{
-            res.json({message:"No such request to be accepted"})
-        }
+        const uid = prefix + req.body.uid
+        const aid = prefix + req.body.acceptedId
 
-    }catch (err){
-        res.json(err)
-    }
+        getToken()
+        .then((data)=>{
+            Singlefetch(uid, data.access_token,'GET', "https://dev-1ksx3uq3.us.auth0.com/api/v2/users/")
+            .then((result)=>{
+                var array = result.user_metadata.friendRequest
+                var key = array.indexOf(aid)
+                if (key == -1){
+                    res.json({message:"No such request to be accepted"})
+                    return;
+                }
+                array.splice(key,1)
+                result.user_metadata.friends.push(aid)
+                SinglefetchWithdata(uid, data.access_token,'PATCH', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/',{user_metadata:{friends:result.user_metadata.friends,friendRequest:array}})
+                .then((endResult)=>{
+                    res.json(endResult)
+                })
+            })
+            Singlefetch(aid, data.access_token,'GET', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/')
+            .then((result)=>{
+                result.user_metadata.friends.push(uid)
+                SinglefetchWithdata(aid, data.access_token,'PATCH', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/',{user_metadata:{friends:result.user_metadata.friends}})
+            })
+        })
 },
 removeFriend: async (req,res)=>{
-    try{
-        const uid = req.body.uid
-        const aid = req.body.removeId
-        const check = await userCollection.findOne({_id:mongoose.Types.ObjectId(uid),friends:prefix + aid})
-        const check2 = await userCollection.findOne({_id:mongoose.Types.ObjectId(aid),friends:prefix + uid})
-        if (check != null && check2 != null){
-            userCollection.updateOne({_id:mongoose.Types.ObjectId(uid)},{$pull:{friends:prefix+ aid}})
-            userCollection.updateOne({_id:mongoose.Types.ObjectId(aid)},{$pull:{friends:prefix+uid}})
-            res.json({message:"Friend removed"})
-        }else{
-            res.json({message:"No such friend to be removed"})
-        }
-    }catch (err){
-        res.json(err)
-    }
+        const uid = prefix + req.body.uid
+        const aid = prefix + req.body.removeId
+
+        getToken()
+        .then((data)=>{
+            Singlefetch(uid, data.access_token, 'GET', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/')
+            .then((result)=>{
+                var array = result.user_metadata.friends
+                var key = array.indexOf(aid)
+                if (key == -1){
+                    res.json({message:"No such friend to be removed"})
+                    return;
+                }
+                array.splice(key,1)
+                SinglefetchWithdata(uid, data.access_token,'PATCH', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/',{user_metadata:{friends:array}})
+                .then((endResult)=>{
+                    res.json(endResult)
+                })
+            })
+            Singlefetch(aid, data.access_token,'GET', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/')
+            .then((result)=>{
+                var array = result.user_metadata.friends
+                var key = array.indexOf(uid)
+                if (key == -1){
+                    res.json({message:"No such friend to be removed"})
+                    return;
+                }
+                array.splice(key,1)
+                SinglefetchWithdata(uid, data.access_token,'PATCH', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/',{user_metadata:{friends:array}})
+            })
+        })
 },
 deleteUser: async (req,res)=>{
-    try{
-        if (!mongoose.isValidObjectId(req.params.id)){
-            res.json({message:"Can't parse such id"})
-            return;
-        }
-        var doc = await userCollection.findOne({_id:mongoose.Types.ObjectId(req.params.id)})
-        if (doc != null){
-            await userCollection.deleteOne({_id:mongoose.Types.ObjectId(req.params.id)})
-            await postCollection.deleteMany({"author.sub":prefix + req.params.id})
-            userCollection.updateMany({friends:prefix + req.params.id},{$pull:{friends:prefix+req.params.id}})
-            userCollection.updateMany({friendRequest:req.params.id},{$pull:{friendRequest:req.params.id}})
-            getToken().then((data)=>{
-                TOKEN = data.access_token
-                var options = { method: 'DELETE',
-                url: 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/'+ prefix + req.params.id,
-                headers: { 'authorization':'Bearer ' + TOKEN, 'content-type': 'application/json' },
-                body: {},
-                json:true};
-                    request(options, function (error, response, body) {
-                    if (error) throw new Error(error);
-                    res.json({message:"Deleted User"});
-                });
-            })
-            
-        }else{
-            res.json({message:"No such user"})
-        }
-    }catch (err){
-        res.json(err)
-    }
+    var key = prefix + req.params.id
+    getToken()
+    .then((data)=>{
+        Singlefetch(key, data.access_token,'DELETE', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/')
+        .then((result)=>{
+            res.json(result)
+        })
+    })
 },
 getFriends: async (req,res)=>{
-    var doc = await userCollection.findOne({_id:mongoose.Types.ObjectId(req.params.id)})
-    if (doc.friends.length == 0){
-        res.json({message:"No friends available to be fetched"})
-    }else{
-        getToken().then((data)=>{
-            Mutifetch(doc.friends,data.access_token).then((data)=>{
-                res.json(data)
+    var key = prefix + req.params.id
+    getToken()
+    .then((data)=>{
+        Singlefetch(key,data.access_token,'GET', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/')
+        .then((result)=>{
+            Mutifetch(result.user_metadata.friends, data.access_token, 'GET', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/')
+            .then((resultArray)=>{
+                res.json(resultArray)
             })
-        })
-    }
+        })  
+    })
 },
 getFriendRequest: async (req,res) =>{
-    var doc = await userCollection.findOne({_id:mongoose.Types.ObjectId(req.params.id)})
-    if (doc.friendRequest.length == 0){
-        res.json({message:"No pending request"})
-    }else{
-        getToken().then((data)=>{
-            Mutifetch(doc.friendRequest,data.access_token).then((data)=>{
-                res.json(data)
+    var key = prefix + req.params.id
+    getToken()
+    .then((data)=>{
+        Singlefetch(key,data.access_token,'GET', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/')
+        .then((result)=>{
+        Mutifetch(result.user_metadata.friendRequest, data.access_token, 'GET', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/')
+        .then((resultArray)=>{
+                res.json(resultArray)
             })
         })
-    }
+    })
 }
 };
