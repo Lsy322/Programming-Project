@@ -37,3 +37,13 @@ export const acceptFriendRequest = (userid, acceptId) => async(dispatch) => {
         console.log(error.message);
     }
 }
+
+export const deleteFriend = (userid, removeId) => async(dispatch) => {
+    try{
+        await api.deleteFriend(userid,removeId);
+        const {data} = await api.getUser(userid);
+        dispatch({type: 'USER_DELETE_FRIEND', payload: data});
+    } catch (error) {
+        console.log(error.message);
+    }
+}

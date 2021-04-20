@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import PropTypes from 'prop-types';
 import SwipeableViews from 'react-swipeable-views';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -7,10 +7,13 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import {useDispatch, useSelector} from 'react-redux';
+import {getFriend, getFriendRequest} from '../../context/action/FriendSystem';
 
 //FRIENDS AND FRIENDREQUESTS COMPONENTS
 import FriendList from './Friends/FriendList';
 import RequestList from './Friend_requests/RequestList';
+import { useAuth0 } from '@auth0/auth0-react';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -55,6 +58,18 @@ export default function FullWidthTabs() {
   const classes = useStyles();
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
+
+  const reduxUser = useSelector((state) => state.user);
+  
+  const {user, isAuthenticated} = useAuth0();
+
+  const dispatch = useDispatch();
+  useEffect(()=> {
+    if(isAuthenticated){
+      dispatch(getFriend(user.sub.substring(6)));
+      dispatch(getFriendRequest(user.sub.substring(6)));
+    }
+  },[reduxUser]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

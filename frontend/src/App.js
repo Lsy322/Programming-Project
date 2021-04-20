@@ -48,6 +48,8 @@ const App = () => {
     }
   }, [dispatch, isAuthenticated]);
 
+
+
   const {isLoading} = useAuth0();
   
   if(isLoading) {

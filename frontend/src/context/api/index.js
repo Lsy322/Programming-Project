@@ -11,6 +11,9 @@ export const deletePost = (id) => axios.delete(`${url_posts}/${id}/delete`);
 const url_user = "http://localhost:5000/user";
 export const getUser = (id) => axios.get(`${url_user}/${id}`);
 export const deleteUser = (id) => axios.delete(`${url_user}/delete/${id}`);
+
+export const getFriend = (id) => axios.get(`${url_user}/friends/${id}`);
+export const getFriendRequest = (id) => axios.get(`${url_user}/friendRequest/${id}`);
 export const addFriendRequest = (userid, targetid) =>
   axios({
     method: "post",
@@ -20,9 +23,6 @@ export const addFriendRequest = (userid, targetid) =>
       SendId: userid,
     },
   });
-
-export const getFriend = (id) => axios.get(`${url_user}/friends/${id}`);
-export const getFriendRequest = (id) => axios.get(`${url_user}/friendRequest/${id}`);
 export const acceptFriendRequest = (userid, acceptId) => 
 axios({
   method: 'put',
@@ -32,4 +32,21 @@ axios({
     acceptedId: acceptId,
   },
 });
-
+export const deleteFriend = (userid, removeId) => 
+axios({
+  method: 'delete',
+  url: `${url_user}/removeFriend`,
+  data: {
+    uid: userid,
+    removeId: removeId,
+  }
+})
+export const declineFriendRequest = (userid, removeId) => 
+axios({
+  method: 'delete',
+  url: `${url_user}/removeRequest`,
+  data: {
+    RecieveId: userid,
+    RemoveId: removeId
+  }
+})

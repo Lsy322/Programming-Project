@@ -9,6 +9,8 @@ export default (user = {}, action) => {
             return user;
         case 'USER_ACCEPT_FRIEND_REQUEST':
             return action.payload;
+        case 'USER_DELETE_FRIEND':
+            return action.payload;
         default:
             return user;
     }
