@@ -47,3 +47,13 @@ export const deletePost = (id) => async (dispatch) => {
     console.log(error.message);
   }
 }
+
+
+export const createRepost = (post_id) => async(dispatch) => {
+  try {
+    const {data} = await api.createRepost(post_id);
+    dispatch({type: 'CREATE_REPOST', payload: data});
+  } catch (error) {
+    console.log(error.message);
+  }
+}

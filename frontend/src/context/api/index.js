@@ -15,6 +15,7 @@ axios({
     sub: userid
   }
 });
+export const createRepost = (post_id) => axios.put(url_posts, post_id);
 
 const url_user = "http://localhost:5000/user";
 export const getUser = (id) => axios.get(`${url_user}/${id}`);

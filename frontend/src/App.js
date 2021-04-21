@@ -14,7 +14,7 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getPosts, getPreferPost } from "./context/action/posts";
 import { getUser } from "./context/action/User";
@@ -38,14 +38,15 @@ const App = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useAuth0();
-
+  
   useEffect(() => {
     // dispatch(getPosts());
     if (isAuthenticated) {
-      dispatch(getPreferPost(user.sub));
-      dispatch(getUser(user.sub.substring(6)));
-      dispatch(getFriend(user.sub.substring(6)));
-      dispatch(getFriendRequest(user.sub.substring(6)));
+      dispatch(getPreferPost(user.sub)).then(() => {
+        dispatch(getUser(user.sub.substring(6)));
+        dispatch(getFriend(user.sub.substring(6)));
+        dispatch(getFriendRequest(user.sub.substring(6)));
+      });
     } else {
       dispatch(getPosts());
     }
@@ -103,7 +104,7 @@ const App = () => {
             component={Profile}
           ></ProtectedRoute>
         ) : null}
-        <ProtectedRoute path='/liveChat/user1' component={LiveChat} />
+        <ProtectedRoute path="/liveChat/user1" component={LiveChat} />
         <ProtectedRoute path="/createPost" component={CreatePost} />
         <Route path="/" exact component={Home} />
       </Switch>

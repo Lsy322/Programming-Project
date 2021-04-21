@@ -4,7 +4,12 @@ import * as api from '../api/index';
 export const getFriend = (id) => async (dispatch) => {
     try {
       const { data } = await api.getFriend(id);
-      dispatch({ type: 'GET_FRIENDS', payload: data });
+      if (Array.isArray(data)){
+          dispatch({ type: 'GET_FRIENDS', payload: data });
+      } else {
+          dispatch({ type: 'GET_FRIENDS', payload: [] });
+      }
+      
     } catch (error) {
       console.log(error.message);
     }
@@ -14,7 +19,11 @@ export const getFriend = (id) => async (dispatch) => {
 export const getFriendRequest = (id) => async(dispatch) => {
     try {
         const {data} = await api.getFriendRequest(id);
-        dispatch({type: 'GET_FRIEND_REQUESTS', payload: data});
+        if (Array.isArray(data)){
+            dispatch({type: 'GET_FRIEND_REQUESTS', payload: data});
+        } else {
+            dispatch({type: 'GET_FRIEND_REQUESTS', payload: []});
+        }
     } catch (error) {
         console.log(error);
     }
@@ -23,6 +32,7 @@ export const getFriendRequest = (id) => async(dispatch) => {
 export const acceptFriendRequest_usingAuth0 = (acceptedId) =>  async(dispatch) => {
     try {
         const {data} = await api.getUser(acceptedId);
+        console.log(data);
         dispatch({
             type: 'ACCEPT_FRIEND_REQUEST',
             payload: {
