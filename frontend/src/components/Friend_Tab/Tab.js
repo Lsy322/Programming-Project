@@ -59,18 +59,6 @@ export default function FullWidthTabs() {
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
 
-  const reduxUser = useSelector((state) => state.user);
-  
-  const {user, isAuthenticated} = useAuth0();
-
-  const dispatch = useDispatch();
-  useEffect(()=> {
-    if(isAuthenticated){
-      dispatch(getFriend(user.sub.substring(6)));
-      dispatch(getFriendRequest(user.sub.substring(6)));
-    }
-  },[reduxUser]);
-
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
