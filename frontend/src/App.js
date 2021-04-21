@@ -43,9 +43,9 @@ const App = () => {
     // dispatch(getPosts());
     if (isAuthenticated) {
       dispatch(getPreferPost(user.sub)).then(()=>{
-        dispatch(getUser(user.sub.substring(6)));
-        dispatch(getFriend(user.sub.substring(6)));
-        dispatch(getFriendRequest(user.sub.substring(6)));
+        dispatch(getUser(user.sub));
+        dispatch(getFriend(user.sub));
+        dispatch(getFriendRequest(user.sub));
       });
     } else {
       dispatch(getPosts());

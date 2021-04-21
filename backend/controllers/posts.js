@@ -2,7 +2,6 @@ var PostMessage = require('../models/postMessage.js');
 var authApi = require('./auth0.js')
 var user = require("./user.js")
 
-const prefix = "auth0|"
 
 const getToken = authApi.getToken
 const Singlefetch = authApi.Singlefetch

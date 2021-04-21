@@ -23,7 +23,7 @@ function friendRequestsReducer(friendRequests = [], action) {
             return action.payload;
         case 'ACCEPT_FRIEND_REQUEST':
             console.log(friendRequests);
-            return friendRequests.filter((request) => request.user_id.substring(6) !== action.payload);
+            return friendRequests.filter((request) => request.user_id !== action.payload);
         default:
             return friendRequests;
     }
@@ -36,11 +36,11 @@ export default (friendSystem = initialState, action) => {
         case 'GET_FRIEND_REQUESTS':
             return {...friendSystem, friendRequests: friendRequestsReducer(friendSystem.friendRequests, action) }
         case 'ACCEPT_FRIEND_REQUEST':
-            return {...friendSystem, friends: [...friendSystem.friends, action.payload.data], friendRequests: friendSystem.friendRequests.filter((request) => request.user_id.substring(6) !== action.payload.acceptedId)}
+            return {...friendSystem, friends: [...friendSystem.friends, action.payload.data], friendRequests: friendSystem.friendRequests.filter((request) => request.user_id !== action.payload.acceptedId)}
         case 'DECLINE_FRIEND_REQUEST':
-            return {...friendSystem, friendRequests: friendSystem.friendRequests.filter((request) => request.user_id.substring(6) !== action.payload)}
+            return {...friendSystem, friendRequests: friendSystem.friendRequests.filter((request) => request.user_id !== action.payload)}
         case 'DELETE_FRIEND':
-            return {...friendSystem, friends: friendSystem.friends.filter((friend) => friend.user_id.substring(6) !== action.payload)}
+            return {...friendSystem, friends: friendSystem.friends.filter((friend) => friend.user_id !== action.payload)}
         default:
             return friendSystem;
     }

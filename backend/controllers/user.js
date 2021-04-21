@@ -4,8 +4,6 @@ var authApi = require("./auth0.js")
 const postCollection = require("../models/postMessage.js")
 const friendCollection = require("../models/friends.js")
 
-const prefix = "auth0|"
-
 const userFetch = authApi.getUserList
 const Singlefetch = authApi.Singlefetch
 
@@ -88,7 +86,7 @@ module.exports =
 {
     fetchUser,
 getUser: async (req,res)=>{
-    var key = prefix + req.params.id
+    var key = req.params.id
     fetchUser(key)
     .then((result)=>{
         if (result == undefined){
@@ -100,8 +98,8 @@ getUser: async (req,res)=>{
 
 },
 addFriendRequest: async (req,res)=>{
-    const rkey = prefix + req.body.RecieveId
-    const skey = prefix + req.body.SendId
+    const rkey = req.body.RecieveId
+    const skey = req.body.SendId
         
         fetchUser(rkey)
         .then(async (result)=>{
@@ -124,8 +122,8 @@ addFriendRequest: async (req,res)=>{
         })
 },
 removeFriendRequest: async(req,res)=>{
-        const rkey = prefix + req.body.RecieveId
-        const skey = prefix + req.body.RemoveId
+        const rkey = req.body.RecieveId
+        const skey = req.body.RemoveId
         fetchUser(rkey)
         .then(async (result)=>{
             if (result == undefined){
@@ -143,8 +141,8 @@ removeFriendRequest: async(req,res)=>{
         })
 },
 acceptFriendRequest: async (req,res)=>{
-        const uid = prefix + req.body.uid
-        const aid = prefix + req.body.acceptedId
+        const uid = req.body.uid
+        const aid = req.body.acceptedId
         fetchUser(uid)
         .then(async (result)=>{
             if (result == undefined){
@@ -166,8 +164,8 @@ acceptFriendRequest: async (req,res)=>{
         })
 },
 removeFriend: async (req,res)=>{
-        const uid = prefix + req.body.uid
-        const aid = prefix + req.body.removeId
+        const uid = req.body.uid
+        const aid = req.body.removeId
         fetchUser(uid)
         .then(async (result)=>{
             var array = result.user_metadata.friends
@@ -192,7 +190,7 @@ removeFriend: async (req,res)=>{
 
 },
 deleteUser: async (req,res)=>{
-    var key = prefix + req.params.id
+    var key = req.params.id
     Singlefetch(key,'DELETE', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/')
     .then(async (result)=>{
         await postCollection.deleteMany({"author.sub":key})
@@ -204,7 +202,7 @@ deleteUser: async (req,res)=>{
     })
 },
 getFriends: async (req,res)=>{
-    var key = prefix + req.params.id
+    var key = req.params.id
     var resultArray = []
     fetchUser(key)
     .then((result)=>{
@@ -228,7 +226,7 @@ getFriends: async (req,res)=>{
     })  
 },
 getFriendRequest: async (req,res) =>{
-    var key = prefix + req.params.id
+    var key = req.params.id
     var resultArray = []
     fetchUser(key)
     .then((result)=>{
