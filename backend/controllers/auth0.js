@@ -50,9 +50,6 @@ module.exports = {
     Singlefetch : (fetchId, METHOD, URL) =>{
         return new Promise(function (resolve,reject){
             var element = fetchId
-            if (element.indexOf(prefix) == -1){
-                 element = prefix + fetchId
-            }
             var options = { method: METHOD,
             url: URL + element,
             headers: { 'authorization':'Bearer ' + TOKEN , 'content-type': 'application/json' },
@@ -72,9 +69,6 @@ module.exports = {
     SinglefetchWithdata : (fetchId, METHOD, URL, DATA) =>{
         return new Promise(function (resolve,reject){
             var element = fetchId
-            if (element.indexOf(prefix) == -1){
-                 element = prefix + fetchId
-            }
             var options = { method: METHOD,
             url: URL + element,
             headers: { 'authorization':'Bearer ' + TOKEN, 'content-type': 'application/json' },
@@ -95,9 +89,6 @@ module.exports = {
         return new Promise(function (resolve,reject){
             for (let index = 0; index < IdArray.length; index++) {
                 var element = IdArray[index];
-                if (element.indexOf(prefix) == -1){
-                    element = prefix + element
-                }
                 var options = { method: METHOD,
                 url: URL + element,
                 headers: { 'authorization':'Bearer ' + TOKEN, 'content-type': 'application/json' },

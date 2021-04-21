@@ -22,7 +22,7 @@ const Profile = () => {
   useEffect(() => {
    
    async function getAuth0User(id){
-        const id_to_be_parsed = id.substring(6);
+        const id_to_be_parsed = id;
         const {data} = await api.getUser(id_to_be_parsed);
         setUserInfo({...userinfo, nickname: data.nickname, user_id: data.user_id, friends: data.user_metadata.friends, picture: data.picture});
    }
@@ -31,7 +31,7 @@ const Profile = () => {
 
   //NEED TO IMPLEMENT IN REDUX LATER
   const handleDeleteUserClick = async() => {      
-    const id_to_be_deleted = id.substring(6);
+    const id_to_be_deleted = id;
     logout({
         returnTo: window.location.origin,
       });
@@ -39,8 +39,8 @@ const Profile = () => {
   }
 
   const handleAddFriendClick = async() => {
-      const user_id_to_be_sent = user.sub.substring(6);
-      const target_id_to_be_sent = id.substring(6);
+      const user_id_to_be_sent = user.sub;
+      const target_id_to_be_sent = id;
       dispatch(addFriendRequest(user_id_to_be_sent,target_id_to_be_sent));
       console.log('friend added');
    }

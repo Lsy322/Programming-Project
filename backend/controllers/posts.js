@@ -2,7 +2,6 @@ var PostMessage = require('../models/postMessage.js');
 var authApi = require('./auth0.js')
 var user = require("./user.js")
 
-const prefix = "auth0|"
 
 const getToken = authApi.getToken
 const Singlefetch = authApi.Singlefetch
@@ -11,7 +10,7 @@ const fetchUser = user.fetchUser
 module.exports =  
 {getPosts : async (req, res) => {
     try{
-        const postMessage = await PostMessage.find().sort({createAt:-1});
+        const postMessage = await PostMessage.find({"permission.viewPermission":false}).sort({createAt:-1});
         res.status(200).json(postMessage);
     }catch (err){
         res.status(404).json({message: "error message"});

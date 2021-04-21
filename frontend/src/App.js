@@ -38,14 +38,14 @@ const App = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useAuth0();
-  
+
   useEffect(() => {
     // dispatch(getPosts());
     if (isAuthenticated) {
-      dispatch(getPreferPost(user.sub)).then(() => {
-        dispatch(getUser(user.sub.substring(6)));
-        dispatch(getFriend(user.sub.substring(6)));
-        dispatch(getFriendRequest(user.sub.substring(6)));
+      dispatch(getPreferPost(user.sub)).then(()=>{
+        dispatch(getUser(user.sub));
+        dispatch(getFriend(user.sub));
+        dispatch(getFriendRequest(user.sub));
       });
     } else {
       dispatch(getPosts());
