@@ -29,7 +29,7 @@ export default (friendSystem = initialState, action) => {
         case 'GET_FRIEND_REQUESTS':
             return {...friendSystem, friendRequests: friendRequestsReducer(friendSystem.friendRequests, action) }
         case 'ACCEPT_FRIEND_REQUEST':
-            return {friends: [...friendSystem.friends, action.payload.data], friendRequests: friendSystem.friendRequests.filter((request) => request.user_id.substring(6) !== action.payload.acceptedId)}
+            return {friends: [...friendSystem.friends, action.payload.data], friendRequests: friendSystem.friendRequests.filter((request) => request.user_id !== action.payload.acceptedId)}
         case 'DECLINE_FRIEND_REQUEST':
             return {...friendSystem, friendRequests: friendSystem.friendRequests.filter((request) => request.user_id !== action.payload)}
         case 'DELETE_FRIEND':
