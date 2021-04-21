@@ -73,16 +73,13 @@ getPostsById: async (req,res)=>{
 getPreferPost: async (req,res)=>{
     try{
         const uid = req.body.sub
-        getToken()
-        .then((data)=>{
-            Singlefetch(uid, data.access_token, 'GET' ,"https://dev-1ksx3uq3.us.auth0.com/api/v2/users/")
+            Singlefetch(uid, 'GET' ,"https://dev-1ksx3uq3.us.auth0.com/api/v2/users/")
             .then(async (result)=>{
                 var requestId = result.user_metadata.friends
                 var postMessage = await PostMessage.find({$or:[{"author.sub":uid},{"author.sub":{$in: requestId}},{"permission.viewPermission":false}]}).sort({createAt:-1})
                 console.log(postMessage.length)
                 res.json(postMessage)
             })
-        })
     }
     catch (err){
         res.send(err)
