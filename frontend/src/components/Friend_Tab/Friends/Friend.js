@@ -11,8 +11,8 @@ const Friend = ({friend}) => {
     const dispatch = useDispatch();
 
     const handleDeleteFriendClick = () => {
-        const user_id_to_be_sent = user.sub.substring(user.sub.indexOf('|')+1);
-        const remove_id_to_be_sent = friend.user_id.substring(friend.user_id.indexOf('|')+1);
+        const user_id_to_be_sent = user.sub;
+        const remove_id_to_be_sent = friend.user_id;
         dispatch(deleteFriend(user_id_to_be_sent,remove_id_to_be_sent)); 
         dispatch(deleteFriend_usingAuth0(remove_id_to_be_sent));   
     }

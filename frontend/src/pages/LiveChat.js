@@ -14,7 +14,7 @@ const ENDPOINT = 'http://localhost:5000'
 
 const LiveChat = () => {
     let {userName} = useParams();
-
+    
     const [rooms, setRooms] = useState([])
     const [roomTitle, setRoomTitle] = useState()
     const [messages, setMessages] = useState([])
@@ -24,7 +24,7 @@ const LiveChat = () => {
     const [enteredRoomTitle, setEnteredRoomTitle] = useState('')
     const [messageToBeSend, setMessageToBeSend] = useState()
 
-
+    console.log(userName);
     const getRoomData = (roomId) =>{
         axios.get(ENDPOINT + `/chat/getRoomData/${roomId}`)
             .then(res => {

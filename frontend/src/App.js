@@ -84,7 +84,7 @@ const App = () => {
           ) : null}
 
           {isAuthenticated ? (
-            <Button variant="contained" color="primary" href="/liveChat">
+            <Button variant="contained" color="primary" href={`/liveChat/user1`}>
               Live Chat
             </Button>
           ) : null}
@@ -104,7 +104,7 @@ const App = () => {
             component={Profile}
           ></ProtectedRoute>
         ) : null}
-        <ProtectedRoute path="/liveChat/user1" component={LiveChat} />
+        <ProtectedRoute path={`/liveChat/:userName`} component={LiveChat} />
         <ProtectedRoute path="/createPost" component={CreatePost} />
         <Route path="/" exact component={Home} />
       </Switch>
