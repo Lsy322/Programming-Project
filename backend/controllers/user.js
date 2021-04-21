@@ -156,9 +156,6 @@ acceptFriendRequest: async (req,res)=>{
                 return;
             }
             await friendCollection.updateOne({user_id:uid},{$pull:{friendRequest:aid},$push:{friends:aid}})
-        })
-        fetchUser(aid)
-        .then(async (result)=>{
             await friendCollection.updateOne({user_id:aid},{$push:{friends:uid}})
             res.json({message:"Added Friend"})
         })
@@ -168,6 +165,7 @@ removeFriend: async (req,res)=>{
         const aid = req.body.removeId
         fetchUser(uid)
         .then(async (result)=>{
+            console.log(result)
             var array = result.user_metadata.friends
             var key = array.indexOf(aid)
             if (key == -1){
