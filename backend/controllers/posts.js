@@ -1,12 +1,12 @@
 var PostMessage = require('../models/postMessage.js');
 var authApi = require('./auth0.js')
+var user = require("./user.js")
 
 const prefix = "auth0|"
 
 const getToken = authApi.getToken
 const Singlefetch = authApi.Singlefetch
-const SinglefetchWithdata = authApi.Mutifetch
-const Mutifetch = authApi.Mutifetch
+const fetchUser = user.fetchUser
 
 module.exports =  
 {getPosts : async (req, res) => {
@@ -73,8 +73,12 @@ getPostsById: async (req,res)=>{
 getPreferPost: async (req,res)=>{
     try{
         const uid = req.body.sub
-            Singlefetch(uid, 'GET' ,"https://dev-1ksx3uq3.us.auth0.com/api/v2/users/")
+            fetchUser(uid)
             .then(async (result)=>{
+                if (result == undefined){
+                    res.json({message:"No such user"})
+                    return
+                }
                 var requestId = result.user_metadata.friends
                 var postMessage = await PostMessage.find({$or:[{"author.sub":uid},{"author.sub":{$in: requestId}},{"permission.viewPermission":false}]}).sort({createAt:-1})
                 console.log(postMessage.length)
