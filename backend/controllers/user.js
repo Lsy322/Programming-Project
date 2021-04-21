@@ -152,7 +152,6 @@ acceptFriendRequest: async (req,res)=>{
                 return
             }
             var array = result.user_metadata.friendRequest
-            console.log(result)
             var key = array.indexOf(aid)
             if (key == -1){
                 res.json({message:"No such request to be accepted"})
@@ -196,8 +195,10 @@ deleteUser: async (req,res)=>{
     var key = prefix + req.params.id
     Singlefetch(key,'DELETE', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/')
     .then(async (result)=>{
-        await postCollection.deleteMany({"author.sub":req.params.id})
+        await postCollection.deleteMany({"author.sub":key})
         await friendCollection.deleteOne({user_id:key})
+        await friendCollection.updateMany({friendRequest:key},{$pull:{friendRequest:key}})
+        await friendCollection.updateMany({friends:key},{$pull:{friends:key}})
         fetchUser("refetch")
         res.json("deleted User")
     })

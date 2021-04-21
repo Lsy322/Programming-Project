@@ -42,10 +42,11 @@ const App = () => {
   useEffect(() => {
     // dispatch(getPosts());
     if (isAuthenticated) {
-      dispatch(getPreferPost(user.sub));
-      dispatch(getUser(user.sub.substring(6)));
-      dispatch(getFriend(user.sub.substring(6)));
-      dispatch(getFriendRequest(user.sub.substring(6)));
+      dispatch(getPreferPost(user.sub)).then(()=>{
+        dispatch(getUser(user.sub.substring(6)));
+        dispatch(getFriend(user.sub.substring(6)));
+        dispatch(getFriendRequest(user.sub.substring(6)));
+      });
     } else {
       dispatch(getPosts());
     }

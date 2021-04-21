@@ -11,7 +11,7 @@ const fetchUser = user.fetchUser
 module.exports =  
 {getPosts : async (req, res) => {
     try{
-        const postMessage = await PostMessage.find().sort({createAt:-1});
+        const postMessage = await PostMessage.find({"permission.viewPermission":false}).sort({createAt:-1});
         res.status(200).json(postMessage);
     }catch (err){
         res.status(404).json({message: "error message"});
