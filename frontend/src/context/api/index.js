@@ -7,6 +7,14 @@ export const createPost = (newPost) => axios.put(url_posts, newPost);
 export const updatePost = (id, updatePost) =>
   axios.patch(`${url_posts}/${id}`, updatePost);
 export const deletePost = (id) => axios.delete(`${url_posts}/${id}/delete`);
+export const fetchPreferPost = (userid) => 
+axios({
+  method: 'post',
+  url: `${url_posts}/prefer`,
+  data: {
+    sub: userid
+  }
+});
 
 const url_user = "http://localhost:5000/user";
 export const getUser = (id) => axios.get(`${url_user}/${id}`);

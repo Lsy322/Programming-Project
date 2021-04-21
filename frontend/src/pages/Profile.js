@@ -24,7 +24,7 @@ const Profile = () => {
    async function getAuth0User(id){
         const id_to_be_parsed = id.substring(6);
         const {data} = await api.getUser(id_to_be_parsed);
-        setUserInfo(data);
+        setUserInfo({...userinfo, nickname: data.nickname, user_id: data.user_id, friends: data.user_metadata.friends, picture: data.picture});
    }
    getAuth0User(id);
   }, []);

@@ -4,6 +4,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import {useDispatch} from 'react-redux';
 import { useAuth0 } from '@auth0/auth0-react';
 import { deleteFriend } from '../../../context/action/User';
+import { deleteFriend_usingAuth0 } from '../../../context/action/FriendSystem';
 
 const Friend = ({friend}) => {
     const {user} = useAuth0();
@@ -12,9 +13,10 @@ const Friend = ({friend}) => {
     const handleDeleteFriendClick = () => {
         const user_id_to_be_sent = user.sub.substring(user.sub.indexOf('|')+1);
         const remove_id_to_be_sent = friend.user_id.substring(friend.user_id.indexOf('|')+1);
-        dispatch(deleteFriend(user_id_to_be_sent,remove_id_to_be_sent));    
+        dispatch(deleteFriend(user_id_to_be_sent,remove_id_to_be_sent)); 
+        dispatch(deleteFriend_usingAuth0(remove_id_to_be_sent));   
     }
-    
+
     return (
         <ListItem>
             <ListItemAvatar>

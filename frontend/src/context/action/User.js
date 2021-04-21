@@ -12,7 +12,7 @@ export const getUser = (id) => async (dispatch) => {
 export const deleteUser = (id) => async(dispatch) => {
     try {
         await api.deleteUser(id);
-        dispatch({type: 'DELETE'});
+        dispatch({type: 'DELETE_USER'});
     } catch (error) {
         console.log(error.message);
     }
@@ -20,7 +20,8 @@ export const deleteUser = (id) => async(dispatch) => {
 
 export const addFriendRequest = (userid, targetid) => async(dispatch) => {
     try {
-        await api.addFriendRequest(userid, targetid);
+        const response = await api.addFriendRequest(userid, targetid);
+        console.log(response);
         dispatch({type: 'USER_ADD_FRIEND_REQUEST'});
     } catch (error) {
         console.log(error.message);
@@ -33,6 +34,16 @@ export const acceptFriendRequest = (userid, acceptId) => async(dispatch) => {
         const {data} = await api.getUser(userid);
         dispatch({type: 'USER_ACCEPT_FRIEND_REQUEST', payload: data});
         // dispatch({type: 'ACCEPT_FRIEND_REQUEST', payload: acceptId });
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+export const declineFriendRequest = (userid, removeId) => async(dispatch) => {
+    try {
+        await api.declineFriendRequest(userid, removeId);
+        const {data} = await api.getUser(userid);
+        dispatch({type: 'USER_DECLINE_FRIEND_REQUEST', payload: data});
     } catch (error) {
         console.log(error.message);
     }

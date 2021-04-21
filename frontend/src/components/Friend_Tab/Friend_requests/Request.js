@@ -3,8 +3,8 @@ import React from 'react'
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
 import {useDispatch, useSelector} from 'react-redux';
-import { acceptFriendRequest } from '../../../context/action/User';
-import { getFriend, getFriendRequest } from '../../../context/action/FriendSystem';
+import { acceptFriendRequest, declineFriendRequest } from '../../../context/action/User';
+import {acceptFriendRequest_usingAuth0, declineFriendRequest_usingAuth0} from '../../../context/action/FriendSystem';
 const Request = ({request}) => {
     const dispatch = useDispatch()
     const user = useSelector((state) => state.user);
@@ -12,10 +12,15 @@ const Request = ({request}) => {
         const userid_to_be_sent = user.user_id.substring(6);
         const acceptId_to_be_sent = request.user_id.substring(6);
         dispatch(acceptFriendRequest(userid_to_be_sent,acceptId_to_be_sent));
+        dispatch(acceptFriendRequest_usingAuth0(acceptId_to_be_sent));
     }
    
     const handleDeclineFriendClick = () => {
-        const userid_to_be_sent = user.user_id    }
+        const userid_to_be_sent = user.user_id.substring(6);
+        const declineId_to_be_sent = request.user_id.substring(6);
+        dispatch(declineFriendRequest(userid_to_be_sent,declineId_to_be_sent));
+        dispatch(declineFriendRequest_usingAuth0(declineId_to_be_sent));    
+    }
     
     return (
         <ListItem>

@@ -9,6 +9,15 @@ export const getPosts = () => async (dispatch) => {
   }
 };
 
+export const getPreferPost = (userid) => async(dispatch) => {
+  try {
+    const {data} = await api.fetchPreferPost(userid);
+    dispatch({type: 'FETCH_PREFER', payload: data});
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
 export const createPost = (post) => async (dispatch) => {
   try {
     const {data} = await api.createPost(post);
