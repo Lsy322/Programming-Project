@@ -1,4 +1,6 @@
+const  Mongoose  = require('mongoose');
 var PostMessage = require('../models/postMessage.js');
+var RepostMessage = require('../models/Repost.js')
 var authApi = require('./auth0.js')
 var user = require("./user.js")
 
@@ -7,11 +9,54 @@ const getToken = authApi.getToken
 const Singlefetch = authApi.Singlefetch
 const fetchUser = user.fetchUser
 
+const mergePostRepost = (postArray,repostArray)=>{
+    return new Promise(async function (resolve,reject){
+        var result = []
+        while (postArray.length != 0 && repostArray.length != 0){
+            if (postArray[0].createAt < repostArray[0].createdAt){
+                var repostDoc = repostArray.shift()
+                var doc = await PostMessage.findOne({_id:repostDoc.post_id})
+                var doc = doc.toObject()
+                doc.Type = "Repost"
+                doc.repostId = repostDoc._id
+                doc.repostAuthor = repostDoc.author
+                doc.repostDate = repostDoc.createdAt
+                result.push(doc)
+            }else{
+                result.push(postArray.shift())
+            }
+        }
+        if (postArray.length != 0){
+            for (let i = 0; i < postArray.length; i++){
+                result.push(postArray[i])
+            }
+        }
+        if (repostArray.length != 0){
+            for (let i = 0; i < repostArray.length; i++){
+                var repostDoc = repostArray[i]
+                var doc = await PostMessage.findOne({_id:repostDoc.post_id})
+                var doc = doc.toObject()
+                doc.Type = "Repost"
+                doc.repostId = repostDoc._id
+                doc.repostAuthor = repostDoc.author
+                doc.repostDate = repostDoc.createdAt
+                result.push(doc)
+            }
+        }
+        resolve(result)
+    })
+}
+
 module.exports =  
 {getPosts : async (req, res) => {
     try{
-        const postMessage = await PostMessage.find({"permission.viewPermission":false}).sort({createAt:-1});
-        res.status(200).json(postMessage);
+        var postMessage = await PostMessage.find({"permission.viewPermission":false}).sort({createAt:-1});
+        var repostMessage = await RepostMessage.find({}).sort({createdAt:-1})
+        mergePostRepost(postMessage,repostMessage)
+        .then((result)=>{
+            console.log(result.length)
+            res.status(200).json(result);
+        })
     }catch (err){
         res.status(404).json({message: "error message"});
     }
@@ -30,20 +75,29 @@ createPost : async (req, res) => {
 },
 
 deletePost : async (req,res) =>{
-    if (!req.params.id){
-        res.json({messsage:'Error deleting post'})
-    }
-    if (req.params.id == "all"){     //ONLY FOR DEVOLOPING PURPOSES
-        await PostMessage.deleteMany({});
-        res.json({msg:"deleted all files"})
-    }else{
+    if (req.body.Type == "Repost"){
         try {
-            await PostMessage.deleteOne({_id:req.params.id})
-            res.json({message:"Deleted Post"})
+            await RepostMessage.deleteOne({_id:req.body.repostId})
+            res.json({message:"Deleted repost"})
         }catch (err){
-            res.json({message:err});
+            res.json({err});
         }
-    } 
+    }else{
+        if (!req.params.id){
+            res.json({messsage:'Error deleting post'})
+        }
+        if (req.params.id == "all"){     //ONLY FOR DEVOLOPING PURPOSES
+            await PostMessage.deleteMany({});
+            res.json({msg:"deleted all files"})
+        }else{
+            try {
+                await PostMessage.deleteOne({_id:req.params.id})
+                res.json({message:"Deleted Post"})
+            }catch (err){
+                res.json({err});
+            }
+        } 
+    }    
 },
 
 updatePost: async (req,res)=>{
@@ -80,11 +134,25 @@ getPreferPost: async (req,res)=>{
                 }
                 var requestId = result.user_metadata.friends
                 var postMessage = await PostMessage.find({$or:[{"author.sub":uid},{"author.sub":{$in: requestId}},{"permission.viewPermission":false}]}).sort({createAt:-1})
-                console.log(postMessage.length)
-                res.json(postMessage)
+                var repostMessage = await RepostMessage.find({}).sort({createdAt:-1})
+                mergePostRepost(postMessage,repostMessage).then((result)=>{
+                    console.log(result.length)
+                    res.json(result)
+                })
             })
     }
     catch (err){
+        res.send(err)
+    }
+},
+createRepost: async (req,res)=>{
+        const repost = req.body;
+        const newRepost = new RepostMessage(repost);
+        newRepost.createdAt = Date.now();
+    try{
+        await newRepost.save();
+        res.json(newRepost)
+    }catch (err){
         res.send(err)
     }
 }

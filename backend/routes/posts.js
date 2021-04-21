@@ -10,5 +10,6 @@ router.post('/prefer', postController.getPreferPost)
 router.patch('/:id', postController.updatePost);
 router.put('/', postController.createPost);
 router.delete('/:id/delete', postController.deletePost);
+router.put('/repost', postController.createRepost)
 
 module.exports = router;

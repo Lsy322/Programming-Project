@@ -30,6 +30,10 @@ const postSchema = mongoose.Schema({
         annotationPermission: {type: Boolean, default: true},
         viewPermission: {type: Boolean, default: false},
         commentPermission: {type: Boolean, default: true},
+    },
+    Type: {
+        type: String,
+        default: "Normal"
     }
 });
 
