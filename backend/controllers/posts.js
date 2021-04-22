@@ -1,12 +1,11 @@
-const  Mongoose  = require('mongoose');
+
 var PostMessage = require('../models/postMessage.js');
 var RepostMessage = require('../models/Repost.js')
-var authApi = require('./auth0.js')
+
 var user = require("./user.js")
 
 
-const getToken = authApi.getToken
-const Singlefetch = authApi.Singlefetch
+
 const fetchUser = user.fetchUser
 
 const mergePostRepost = (postArray,repostArray)=>{

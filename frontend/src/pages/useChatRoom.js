@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState} from "react";
 import io from "socket.io-client";
-const ENDPOINT = 'http://localhost:5000'
+const ENDPOINT = 'http://localhost:4000'
 const useChatRoom = (roomId) => {
     const [newRoomData, setNewRoomData] = useState([])
     const socketRef = useRef()
