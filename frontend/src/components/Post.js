@@ -22,7 +22,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import PersonIcon from "@material-ui/icons/Person";
 
 import { useDispatch } from "react-redux";
-import { deletePost } from "../context/action/posts";
+import { createRepost, deletePost } from "../context/action/posts";
 import { useAuth0 } from "@auth0/auth0-react";
 import {useHistory} from 'react-router-dom';
 
@@ -35,16 +35,6 @@ const useStyles = makeStyles((theme) => ({
     height: 0,
     paddingTop: "56.25%", // 16:9
   },
-  expand: {
-    transform: "rotate(0deg)",
-    marginLeft: "auto",
-    transition: theme.transitions.create("transform", {
-      duration: theme.transitions.duration.shortest,
-    }),
-  },
-  expandOpen: {
-    transform: "rotate(180deg)",
-  },
   avatar: {
     backgroundColor: red[500],
   },
@@ -52,20 +42,28 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Post({ post }) {
   const classes = useStyles();
-
+  
+  
   const [postInfo, setPostInfo] = useState(post);
   const dispatch = useDispatch();
   const history = useHistory();
   const { isAuthenticated, user } = useAuth0();
 
   const handleDeleteClick = () => {
-    dispatch(deletePost(post._id));
+    dispatch(deletePost(post._id, post.Type));
   };
   
   const handleProfileClick = () => {
     history.push(`/profile/${post.author.sub}`);
   }
 
+  const handleRepostClick = () => {
+    const repostInfo = {
+      author: user,
+      post_id: post._id,
+    };
+    dispatch(createRepost(repostInfo));
+  }
   var time = new Date(post.createAt); //time Convertion
   var timeString = time.toString();
 
@@ -111,7 +109,7 @@ export default function Post({ post }) {
 
         {/* REPOST ICON */}
         {isAuthenticated && !post.permission.viewPermission ? (
-          <IconButton aria-label="share">
+          <IconButton aria-label="share" onClick={handleRepostClick}>
             <ShareIcon />
           </IconButton>
         ) : null}

@@ -38,20 +38,20 @@ export const updatePost = (id, post) => async (dispatch) => {
   }
 }
 
-export const deletePost = (id) => async (dispatch) => {
+export const deletePost = (id, type) => async (dispatch) => {
   try {
-    await api.deletePost(id);
+    await api.deletePost(id, type);
 
-    dispatch({type: 'DELETE', payload: id});
+    dispatch({type: 'DELETE', payload: {id, type}});
   } catch (error){
     console.log(error.message);
   }
 }
 
 
-export const createRepost = (post_id) => async(dispatch) => {
+export const createRepost = (repostInfo) => async(dispatch) => {
   try {
-    const {data} = await api.createRepost(post_id);
+    const {data} = await api.createRepost(repostInfo);
     dispatch({type: 'CREATE_REPOST', payload: data});
   } catch (error) {
     console.log(error.message);

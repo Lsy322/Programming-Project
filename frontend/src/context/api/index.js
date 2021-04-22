@@ -6,7 +6,14 @@ export const fetchPosts = () => axios.get(`${url_posts}/list`);
 export const createPost = (newPost) => axios.put(url_posts, newPost);
 export const updatePost = (id, updatePost) =>
   axios.patch(`${url_posts}/${id}`, updatePost);
-export const deletePost = (id) => axios.delete(`${url_posts}/${id}/delete`);
+export const deletePost = (id, type) => 
+axios({
+  method: 'delete',
+  url: `${url_posts}/${id}/delete`,
+  data: {
+    Type: type,
+  }
+});
 export const fetchPreferPost = (userid) => 
 axios({
   method: 'post',
@@ -15,7 +22,7 @@ axios({
     sub: userid
   }
 });
-export const createRepost = (post_id) => axios.put(url_posts, post_id);
+export const createRepost = (repostInfo) => axios.put(`${url_posts}/repost`, repostInfo);
 
 const url_user = "http://localhost:5000/user";
 export const getUser = (id) => axios.get(`${url_user}/${id}`);

@@ -77,7 +77,7 @@ createPost : async (req, res) => {
 deletePost : async (req,res) =>{
     if (req.body.Type == "Repost"){
         try {
-            await RepostMessage.deleteOne({_id:req.body.repostId})
+            await RepostMessage.deleteOne({_id:req.params.id})
             res.json({message:"Deleted repost"})
         }catch (err){
             res.json({err});

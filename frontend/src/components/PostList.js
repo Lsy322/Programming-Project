@@ -27,13 +27,19 @@ const PostList = () => {
   console.log(posts);
   
   return (
-    !posts.length ? <CircularProgress /> : (<Box className={classes.postContainer} >
+    !posts.length ? <CircularProgress /> : (
+    <Box className={classes.postContainer} >
       {
         posts.map((post)=> (
-          <Post key={post._id} className={classes.border} my={2} post={post} />
+          (post.Type === 'Repost') ? (
+            <Repost key={post.repostId} className={classes.border} my={2} post={post}/>
+          ):
+          (
+            <Post key={post._id} className={classes.border} my={2} post={post} />
+          )
+          
         ))
       }
-      <Repost />
     </Box>
     )
   );
