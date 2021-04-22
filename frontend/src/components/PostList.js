@@ -3,7 +3,7 @@ import { Box, CircularProgress, makeStyles } from "@material-ui/core";
 import {useSelector} from 'react-redux';
 //import elements from components
 import Post from "./Post";
-
+import Repost from './Re-Post';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -33,6 +33,7 @@ const PostList = () => {
           <Post key={post._id} className={classes.border} my={2} post={post} />
         ))
       }
+      <Repost />
     </Box>
     )
   );
