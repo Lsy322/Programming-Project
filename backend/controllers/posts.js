@@ -151,7 +151,13 @@ createRepost: async (req,res)=>{
         newRepost.createdAt = Date.now();
     try{
         await newRepost.save();
-        res.json(newRepost)
+        var doc = await PostMessage.findOne({_id:newRepost.post_id})
+        doc = doc.toObject()
+        doc.Type = "Repost"
+        doc.repostId = newRepost._id
+        doc.repostAuthor = newRepost.author
+        doc.repostDate = newRepost.createdAt
+        res.json(doc)
     }catch (err){
         res.send(err)
     }

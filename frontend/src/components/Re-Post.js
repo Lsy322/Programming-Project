@@ -48,7 +48,7 @@ const Repost = ({ post }) => {
       <CardHeader
         avatar={<Avatar className={classes.avatar} src={post.repostAuthor.picture} />}
         title={`@Repost/ ${post.title}`}
-        subheader={timeString}
+        subheader={"Reposted at " + timeString + " by " + post.repostAuthor.nickname}
       />
 
       <Card>
@@ -61,7 +61,7 @@ const Repost = ({ post }) => {
         }
         
         title={post.title}
-        subheader={timeCreate} />
+        subheader={"Posted at " + timeCreate + " by " + post.author.nickname} />
         <CardMedia className={classes.media} image={post.image} />
         <CardContent>{post.description}</CardContent>
       </Card>

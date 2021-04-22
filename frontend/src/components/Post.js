@@ -88,7 +88,7 @@ export default function Post({ post }) {
           ) : null
         }
         title={post.title}
-        subheader={timeString}
+        subheader={"Posted at " + timeString + " by " + post.author.nickname}
       />
 
       <CardMedia className={classes.media} image={post.image} />

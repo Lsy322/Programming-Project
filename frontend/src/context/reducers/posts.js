@@ -7,7 +7,7 @@ export default (posts = [], action) => {
         case 'FETCH_PREFER':
             return action.payload;
         case 'CREATE':
-            return [...posts, action.payload];
+            return [action.payload, ...posts];
         case 'UPDATE':
             return posts.map((post) => (post._id === action.payload._id ? action.payload : post));
         case 'DELETE':
@@ -17,7 +17,7 @@ export default (posts = [], action) => {
                 return posts.filter((post) => post.repostId !== action.payload.id);
             }    
         case 'CREATE_REPOST':
-            return [...posts, action.payload];
+            return [action.payload, ...posts];
         default: 
             return posts;
     }
