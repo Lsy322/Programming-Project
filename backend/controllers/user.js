@@ -97,6 +97,20 @@ const fetchUserByEmail = async (queryEmail)=>{
         })
     })
 }
+
+const routineFetching = () =>{
+    userFetch().then((data)=>{
+        userList = data
+        console.log("Routine Refetch")
+        setTimeout(routineFetching,300000)
+        return;
+    })
+}
+
+setTimeout(routineFetching,300000)
+
+
+
 module.exports =  
 {
     fetchUser,              //Query User function
