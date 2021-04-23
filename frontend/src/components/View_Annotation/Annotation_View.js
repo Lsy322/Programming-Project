@@ -63,7 +63,7 @@ class ViewAnnotation extends Component {
           type={this.state.type}
           value={this.state.annotation}
         />
-        <h4>Delete Annotation (You need to reopen this window to see the most updated list of annotations)</h4>
+        <h4>Delete Annotation </h4>
         <Comments>
           {this.props.post.annotations.map((annotation) => (
             <Comment
