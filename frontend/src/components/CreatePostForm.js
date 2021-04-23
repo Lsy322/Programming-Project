@@ -31,12 +31,23 @@ const CreatePostForm = () => {
     });
   };
 
+  const isSuitableFormat = () => {
+    return (
+      postData.image.substring(0, postData.image.indexOf(";")) ===
+        "data:image/jpeg" ||
+      postData.image.substring(0, postData.image.indexOf(";")) ===
+        "data:image/png"
+    );
+  };
+
   const handleSubmit = async (e) => {
     if (postData.title.trim() !== "" && postData.image.trim() !== "") {
-      e.preventDefault();
-      dispatch(createPost(postData));
-      clear();
-      history.push("/"); // THE FUNCTION TO GO BACK TO HOME PAGE
+      if (isSuitableFormat()) {
+        e.preventDefault();
+        dispatch(createPost(postData));
+        clear();
+        history.push("/"); // THE FUNCTION TO GO BACK TO HOME PAGE
+      }
     }
   };
 
