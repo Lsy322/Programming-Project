@@ -13,6 +13,8 @@ export default (user = {}, action) => {
             return action.payload;
         case 'USER_DECLINE_FRIEND_REQUEST':
             return action.payload;
+        case 'USER_CHANGE_NAME':
+            return {...user, nickname: action.payload};
         default:
             return user;
     }

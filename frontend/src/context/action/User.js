@@ -58,3 +58,12 @@ export const deleteFriend = (userid, removeId) => async(dispatch) => {
         console.log(error.message);
     }
 }
+
+export const changeNickName = (id, newName) => async(dispatch) => {
+    try {
+        await api.changeNickname(id,newName);
+        dispatch({type: 'USER_CHANGE_NAME', payload: newName});
+    } catch (error) {
+        console.log(error.message);
+    }
+}

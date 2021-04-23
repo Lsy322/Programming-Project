@@ -27,7 +27,7 @@ export const createRepost = (repostInfo) => axios.put(`${url_posts}/repost`, rep
 const url_user = "http://localhost:5000/user";
 export const getUser = (id) => axios.get(`${url_user}/${id}`);
 export const deleteUser = (id) => axios.delete(`${url_user}/delete/${id}`);
-export const changeNickname = (id,newName) => axios.put(`${url_user}/`)
+export const changeNickname = (id,newName) => axios.put(`${url_user}/`, {id,newName} );
 
 export const getFriend = (id) => axios.get(`${url_user}/friends/${id}`);
 export const getFriendRequest = (id) => axios.get(`${url_user}/friendRequest/${id}`);
