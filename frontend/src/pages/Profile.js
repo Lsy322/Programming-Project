@@ -4,7 +4,7 @@ import { Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogConten
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import * as api from "../context/api/index";
-import { addFriendRequest, deleteUser } from "../context/action/User";
+import { addFriendRequest, deleteUser, changeNickName } from "../context/action/User";
 import { useDispatch } from "react-redux";
 import { getFriend, getFriendRequest } from "../context/action/FriendSystem";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
@@ -58,7 +58,7 @@ const Profile = () => {
   };
 
   const handleChangeNameClick = () => {
-    console.log(newName);
+    dispatch(changeNickName(user.sub,newName))
     onCloseChangeNameDialog();
   };
 

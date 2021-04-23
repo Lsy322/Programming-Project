@@ -13,5 +13,6 @@ router.put('/acceptRequest',userController.acceptFriendRequest);
 router.delete('/delete/:id',userController.deleteUser)
 router.get('/friends/:id',userController.getFriends)
 router.get('/friendRequest/:id',userController.getFriendRequest)
+router.put('/changeName',userController.changeNickname)
 
 module.exports = router;
