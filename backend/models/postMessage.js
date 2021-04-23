@@ -13,10 +13,10 @@ var mongoose = require('mongoose');
 const postSchema = mongoose.Schema({
     id: mongoose.Types.ObjectId,
     title: String,
-    author: String,
+    author: Object,
     description: String,
     image: String,
-    comment: [String],
+    comments: [Object],
     annotations: [Object],
     likeCount: {
         type:Number,
@@ -24,9 +24,17 @@ const postSchema = mongoose.Schema({
     },
     createAt: {
         type: Date,
-        default: Date.now()
+        default: new Date()
     },
-    
+    permission:{
+        annotationPermission: {type: Boolean, default: true},
+        viewPermission: {type: Boolean, default: false},
+        commentPermission: {type: Boolean, default: true},
+    },
+    Type: {
+        type: String,
+        default: "Normal"
+    }
 });
 
 const PostMessage = mongoose.model('posts',postSchema);

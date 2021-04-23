@@ -1,65 +1,72 @@
 import { TextField, Button, Typography } from "@material-ui/core";
 import React, { useState } from "react";
 import FileBase from "react-file-base64";
-import {useDispatch} from 'react-redux';
-import {createPost} from '../context/action/posts';
-import {useHistory} from 'react-router-dom';
- //   {
-  //     id: 'picture 2',
-  //     title: 'title 2',
-  //     author: 'Fekky',
-  //     date: 'September 14, 2017',
-  //     description: 'description 2',
-  //     image: 'https://cdn.mos.cms.futurecdn.net/yL3oYd7H2FHDDXRXwjmbMf-970-80.jpg.webp',
-  //     comments: [],
-  //     annotations: [],
-  //   }
+import { useDispatch } from "react-redux";
+import { createPost } from "../context/action/posts";
+import { useHistory } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
+
 const CreatePostForm = () => {
+  const { user } = useAuth0();
+
   const [postData, setPostData] = useState({
-    title: '',
-    author: 'User',
+    title: "",
+    author: user,
     description: "",
     image: "",
     comment: [],
-    annotations:[],
+    annotations: [],
   });
   const dispatch = useDispatch();
   const history = useHistory();
 
-
   const clear = () => {
     setPostData({
-      title: '',
-      author: 'User',
+      title: "",
+      author: user,
       description: "",
       image: "",
       comment: [],
-      annotations:[],
+      annotations: [],
     });
-  }
+  };
 
-  const handleSubmit = async(e) => {
-    e.preventDefault();
-    dispatch(createPost(postData));
-    clear();
-    history.push('/'); // THE FUNCTION TO GO BACK TO HOME PAGE
-  }
+  const isSuitableFormat = () => {
+    return (
+      postData.image.substring(0, postData.image.indexOf(";")) ===
+        "data:image/jpeg" ||
+      postData.image.substring(0, postData.image.indexOf(";")) ===
+        "data:image/png"
+    );
+  };
+
+  const handleSubmit = async (e) => {
+    if (postData.title.trim() !== "" && postData.image.trim() !== "") {
+      if (isSuitableFormat()) {
+        e.preventDefault();
+        dispatch(createPost(postData));
+        clear();
+        history.push("/"); // THE FUNCTION TO GO BACK TO HOME PAGE
+      }
+    }
+  };
 
   return (
     <form autoComplete="off" noValidate onSubmit={handleSubmit}>
       <Typography variant="h6">Create Posts</Typography>
       <TextField
-      name="title"
-      variant='outlined'
-      label='title'
-      fullWidth
-      value={postData.title}
-      onChange={(e) => setPostData({ ...postData, title: e.target.value })}
+        name="title"
+        variant="outlined"
+        label="title"
+        fullWidth
+        required
+        value={postData.title}
+        onChange={(e) => setPostData({ ...postData, title: e.target.value })}
       />
       <TextField
         name="description"
         variant="outlined"
-        label='description'
+        label="description"
         fullWidth
         value={postData.description}
         onChange={(e) =>
@@ -70,9 +77,7 @@ const CreatePostForm = () => {
         <FileBase
           type="file"
           multiple={false}
-          onDone={({ base64 }) =>
-            setPostData({ ...postData, image: base64 })
-          }
+          onDone={({ base64 }) => setPostData({ ...postData, image: base64 })}
         />
       </div>
       <Button

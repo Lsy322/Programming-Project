@@ -1,20 +1,26 @@
-
-import React,{useEffect} from "react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Switch, Route } from "react-router-dom";
 
 import Home from "./pages/Home";
+import Profile from "./pages/Profile";
 import CreatePost from "./pages/CreatePost";
+import LiveChat from "./pages/LiveChat";
+
 import {
   AppBar,
   Toolbar,
   Typography,
   Button,
-  IconButton,
+  CircularProgress,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import MenuIcon from "@material-ui/icons/Menu";
 import { useDispatch, useSelector } from "react-redux";
-import { getPosts } from "./context/action/posts";
+import { useAuth0 } from "@auth0/auth0-react";
+import { getPosts, getPreferPost } from "./context/action/posts";
+import { getUser } from "./context/action/User";
+import AuthenticationButton from "./components/AuthButtons/authentication-button";
+import ProtectedRoute from "./auth/protected-route";
+import { getFriend, getFriendRequest } from "./context/action/FriendSystem";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,50 +37,78 @@ const useStyles = makeStyles((theme) => ({
 const App = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const posts = useSelector((state) => state.posts);
+  const { user, isAuthenticated } = useAuth0();
 
-  useEffect(()=>{
-    dispatch(getPosts());  
-  },[dispatch])
+  useEffect(() => {
+    // dispatch(getPosts());
+    if (isAuthenticated) {
+      dispatch(getPreferPost(user.sub)).then(()=>{
+        dispatch(getUser(user.sub));
+        dispatch(getFriend(user.sub));
+        dispatch(getFriendRequest(user.sub));
+      });
+    } else {
+      dispatch(getPosts());
+    }
+  }, [dispatch, isAuthenticated]);
+
+  const { isLoading } = useAuth0();
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
 
   return (
-      // navigation bar componen
-    <Router>
-      <div className={classes.root}>
-        <AppBar position="static">
-          <Toolbar>
-            <IconButton
-              edge="start"
-              className={classes.menuButton}
-              color="inherit"
-              aria-label="menu"
+    // navigation bar componen
+    <div className={classes.root}>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" className={classes.title}>
+            Test
+          </Typography>
+
+          {isAuthenticated ? (
+            <Button
+              variant="contained"
+              color="primary"
+              href={`/profile/${user.sub}`}
             >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" className={classes.title}>
-              Test
-            </Typography>
-            
-            <Button variant='contained' color='primary' href='/createPost'>Create Post</Button>
+              Profile
+            </Button>
+          ) : null}
 
-            <Button variant='contained' color='primary' href='/'>Home</Button>
+          {isAuthenticated ? (
+            <Button variant="contained" color="primary" href="/createPost">
+              Create Post
+            </Button>
+          ) : null}
 
-          </Toolbar>
-        </AppBar>
-        {/* A <Switch> looks through its children <Route>s and
+          {isAuthenticated ? (
+            <Button variant="contained" color="primary" href={`/liveChat/ ${user.sub}`}>
+              Live Chat
+            </Button>
+          ) : null}
+
+          <Button variant="contained" color="primary" href="/">
+            Home
+          </Button>
+          <AuthenticationButton />
+        </Toolbar>
+      </AppBar>
+      {/* A <Switch> looks through its children <Route>s and
               renders the first one that matches the current URL. */}
-        <Switch>
-          <Route path="/createPost">
-            <CreatePost />
-          </Route>
-
-          <Route path="/">
-            <Home />
-          </Route>
-        </Switch>
-      </div>
-    </Router>
-
+      <Switch>
+        {isAuthenticated ? (
+          <ProtectedRoute
+            path={`/profile/:id`}
+            component={Profile}
+          ></ProtectedRoute>
+        ) : null}
+        <ProtectedRoute path={`/liveChat/:userName`} component={LiveChat} />
+        <ProtectedRoute path="/createPost" component={CreatePost} />
+        <Route path="/" exact component={Home} />
+      </Switch>
+    </div>
   );
 };
 
