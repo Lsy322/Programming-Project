@@ -270,9 +270,6 @@ changeNickname: async (req,res)=>{
     SinglefetchWithdata(key,'PATCH','https://dev-1ksx3uq3.us.auth0.com/api/v2/users/',{"nickname":newName})
     .then(async (result)=>{
         fetchUser("refetch")
-        await messageCollection.updateMany({"author.sub":key},{$set:{"author.nickname":newName}})
-        await chatroomCollection.updateMany({"users.sub":key},{$set:{"users.$.nickname":newName}})
-        await chatroomCollection.updateMany({"users.user_id":key},{$set:{"users.$.nickname":newName}})
         res.json({message:"Changed Nickname"})
     })
 }
