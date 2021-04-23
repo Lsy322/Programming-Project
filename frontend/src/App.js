@@ -64,7 +64,7 @@ const App = () => {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            Test
+            Group D
           </Typography>
 
           {isAuthenticated ? (

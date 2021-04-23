@@ -240,9 +240,11 @@ const LiveChat = () => {
                                     margin: '10px',
                                     overflowWrap: 'break-word'
                                 }}>
-                                    {message.author.email}
-                                    <br/>
-                                    {message.message}
+                                    <pre>{message.author.email + "   ~" + message.author.nickname}</pre>
+                                    <hr></hr>
+                                    {message.message} 
+                                    <br></br>
+                                    <span style={{float: 'right', fontSize:"1px"}}>{new Date(message.createdAt).toLocaleTimeString()}</span>
                                 </p>
                             ):(
                                 <p style={{
@@ -257,9 +259,12 @@ const LiveChat = () => {
                                     margin: '10px',
                                     overflowWrap: 'break-word'
                                 }}>
-                                    {message.author.email}
-                                    <br/>
-                                    {message.message}
+                                    
+                                    <pre>{message.author.email + "   ~" + message.author.nickname}</pre>
+                                    <hr></hr>
+                                    {message.message} 
+                                    <br></br>
+                                    <span style={{float: 'right', fontSize:"1px"}}>{new Date(message.createdAt).toLocaleTimeString()}</span>
                                 </p>
                             )}
                         </div>

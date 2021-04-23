@@ -1,4 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
+import DeleteIcon from '@material-ui/icons/Delete';
 import { Avatar, Box, Button, Typography } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import {useParams} from 'react-router-dom';
@@ -24,7 +25,10 @@ const Profile = () => {
    async function getAuth0User(id){
         const id_to_be_parsed = id;
         const {data} = await api.getUser(id_to_be_parsed);
-        setUserInfo({...userinfo, nickname: data.nickname, user_id: data.user_id, friends: data.user_metadata.friends, picture: data.picture});
+        setUserInfo({...userinfo,email: data.email, nickname: data.nickname, user_id: data.user_id, friends: data.user_metadata.friends, picture: data.picture,
+        email_verf:data.email_verified,
+        createdAt: data.created_at
+      });
    }
    getAuth0User(id);
   }, []);
@@ -48,17 +52,38 @@ const Profile = () => {
 
   return (
     <Box m={1}>
-      <Avatar src={userinfo.picture} />
-      <Typography>{userinfo.nickname}</Typography>
-      <Typography>{userinfo.user_id}</Typography>
-      <Typography>{userinfo.friends.length}</Typography>
-      {/* Render deletion of itself or add friend request */}
-      {user.sub === userinfo.user_id ? (
-        <Button variant="contained" color="secondary" onClick={handleDeleteUserClick}>
-          Delete User
-        </Button>
+      <div style={{ justifyContent: "center", display: "flex" }}><Avatar  src={userinfo.picture} /></div>
+      <Typography align="center">{"Nickname: " +  userinfo.nickname}</Typography>
+      <Typography align="center">{"Email: " + userinfo.email}</Typography>
+      <Typography align="center">{"Friends: " + userinfo.friends.length}</Typography>
+
+      <hr></hr>
+      <Typography align="center"><b><u>{"User Actions:"}</u></b></Typography>
+
+      {user.sub === userinfo.user_id ? (      //Render the detail of the user or not
+        <p>        
+        <Typography align="center">{"Email Verified: " + userinfo.email_verf}</Typography>
+        <Typography align="center">{"Joined At: " + new Date(userinfo.createdAt).toLocaleString()}</Typography>
+        <div style={{ justifyContent: "center", display: "flex" }}>
+        <Button variant="contained" color="secondary" 
+        startIcon={<DeleteIcon />}  onClick={handleDeleteUserClick}>
+        Delete User</Button>
+        </div>
+        </p>
       ) : (
-        <Button variant="contained" color='primary' onClick={handleAddFriendClick}>Add Friend</Button>
+        <p></p>
+      )}
+      
+      {/* Render deletion of itself or add friend request */}
+      {user.sub === userinfo.user_id ? (   
+        <div style={{ justifyContent: "center", display: "flex" }}>
+        <Button variant="contained" color="secondary" 
+        startIcon={<DeleteIcon />}  onClick={handleDeleteUserClick}>
+        Delete User</Button>
+        </div>
+        
+      ) : (
+        <div style={{ justifyContent: "center", display: "flex" }}><Button variant="contained" color='primary' onClick={handleAddFriendClick}>Add Friend</Button></div>
       )}
 
       {/* Render all post of the user */}
