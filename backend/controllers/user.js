@@ -3,7 +3,10 @@ var authApi = require("./auth0.js")
 
 const postCollection = require("../models/postMessage.js")
 const friendCollection = require("../models/friends.js")
-const repostCollection = require("../models/Repost.js")
+const repostCollection = require("../models/Repost.js");
+const messageCollection = require("../models/Messages.js")
+const chatroomCollection = require("../models/ChatRooms.js")
+const { SinglefetchWithdata } = require("./auth0.js");
 
 const userFetch = authApi.getUserList
 const Singlefetch = authApi.Singlefetch
@@ -260,5 +263,17 @@ getFriendRequest: async (req,res) =>{
             })
         }
     })  
+},
+changeNickname: async (req,res)=>{
+    var key = req.body.id
+    var newName = req.body.newName
+    SinglefetchWithdata(key,'PATCH','https://dev-1ksx3uq3.us.auth0.com/api/v2/users/',{"nickname":newName})
+    .then(async (result)=>{
+        fetchUser("refetch")
+        await messageCollection.updateMany({"author.sub":key},{$set:{"author.nickname":newName}})
+        await chatroomCollection.updateMany({"users.sub":key},{$set:{"users.$.nickname":newName}})
+        await chatroomCollection.updateMany({"users.user_id":key},{$set:{"users.$.nickname":newName}})
+        res.json({message:"Changed Nickname"})
+    })
 }
 };
