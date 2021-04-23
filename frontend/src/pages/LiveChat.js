@@ -6,6 +6,7 @@ import SendIcon from '@material-ui/icons/Send';
 import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import {Add} from "@material-ui/icons";
+import { useAuth0 } from "@auth0/auth0-react";
 
 
 import useChatRoom from './useChatRoom'
@@ -13,7 +14,7 @@ import useChatRoom from './useChatRoom'
 const ENDPOINT = 'http://localhost:5000'
 
 const LiveChat = () => {
-    let {userName} = useParams();
+    let {user} = useAuth0();
     
     const [rooms, setRooms] = useState([])
     const [roomTitle, setRoomTitle] = useState()
@@ -24,10 +25,10 @@ const LiveChat = () => {
     const [enteredRoomTitle, setEnteredRoomTitle] = useState('')
     const [messageToBeSend, setMessageToBeSend] = useState()
 
-    console.log(userName);
     const getRoomData = (roomId) =>{
         axios.get(ENDPOINT + `/chat/getRoomData/${roomId}`)
             .then(res => {
+                console.log(res.data)
                 setMessages(res.data.messages)
                 setUsers(res.data.users)
             })
@@ -69,7 +70,7 @@ const LiveChat = () => {
     )
 
     const getRooms = () =>{
-        axios.get(ENDPOINT + `/chat/getRooms/${userName}`)
+        axios.get(ENDPOINT + `/chat/getRooms/${user.sub}`)
             .then(res => setRooms(res.data))
     }
 
@@ -77,7 +78,7 @@ const LiveChat = () => {
         //e.preventDefault(false)
         axios.post(ENDPOINT + '/chat/createRoom', {
             roomTitle: roomTitle,
-            user: userName
+            user: user
         })
         setRoomTitle('')
     }
@@ -113,10 +114,12 @@ const LiveChat = () => {
     const addUserToRoomBtn = (e) =>{
         e.preventDefault(false)
         axios.put(ENDPOINT + '/chat/addUser', {
-            user: addUser,
+            email : addUser,
             roomId: enteredRoom
         })
-            .then(() => sendData())
+            .then(() => {
+                sendData()
+            })
         setAddUser('')
     }
 
@@ -124,7 +127,7 @@ const LiveChat = () => {
         e.preventDefault(false)
         axios.put(ENDPOINT + '/chat/sendMessage', {
             roomId: enteredRoom,
-            author: userName,
+            author: user,
             message: messageToBeSend
         })
             .then(() => sendData())
@@ -222,9 +225,9 @@ const LiveChat = () => {
                      }
                  }
             >
-                    {messages.map(message =>
+                    {messages.map(message =>     //Mapping message
                         <div key={message._id} style={{clear: 'both'}}>
-                            {message.author === userName ? (
+                            {message.author.sub === user.sub ? (
                                 <p style={{
                                     background: '#f5f5f5',
                                     color: '#32465a',
@@ -237,7 +240,7 @@ const LiveChat = () => {
                                     margin: '10px',
                                     overflowWrap: 'break-word'
                                 }}>
-                                    {message.author}
+                                    {message.author.email}
                                     <br/>
                                     {message.message}
                                 </p>
@@ -254,7 +257,7 @@ const LiveChat = () => {
                                     margin: '10px',
                                     overflowWrap: 'break-word'
                                 }}>
-                                    {message.author}
+                                    {message.author.email}
                                     <br/>
                                     {message.message}
                                 </p>
@@ -318,7 +321,7 @@ const LiveChat = () => {
                  }
             >
                 {users.map(user =>
-                    <div key={user.user}>
+                    <div key={user.email}>
                         <Button
                             size='large'
                             fullWidth
@@ -326,7 +329,7 @@ const LiveChat = () => {
                             variant='outlined'
                             type={'submit'}
                         >
-                            {user.user}
+                            {user.email}
                         </Button>
 
                     </div>
@@ -346,8 +349,8 @@ const LiveChat = () => {
                         fullWidth
                         value={addUser}
                         required={true}
-                        placeholder={'Type user'}
-                        onInput={e => setAddUser(e.target.value)}
+                        placeholder={'Type email'}
+                        onChange={e => setAddUser(e.target.value)}
                         endAdornment={
                             <InputAdornment position="end">
                                 <IconButton size='small' type={'submit'}>

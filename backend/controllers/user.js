@@ -3,6 +3,7 @@ var authApi = require("./auth0.js")
 
 const postCollection = require("../models/postMessage.js")
 const friendCollection = require("../models/friends.js")
+const repostCollection = require("../models/Repost.js")
 
 const userFetch = authApi.getUserList
 const Singlefetch = authApi.Singlefetch
@@ -81,10 +82,22 @@ const fetchUser = async (userid) =>{
     })
 }
 
-
+const fetchUserByEmail = async (queryEmail)=>{
+    return new Promise(async (resolve,reject)=>{
+        var key = userList.find(element => element.email === queryEmail)
+        
+        await friendCollection.findOne({user_id:key.user_id}).then((doc)=>{
+            if (key != undefined){
+                key.user_metadata = {friends:doc.friends,friendRequest : doc.friendRequest}
+            }
+            resolve(key)
+        })
+    })
+}
 module.exports =  
 {
-    fetchUser,
+    fetchUser,              //Query User function
+    fetchUserByEmail,       //Query User function
 getUser: async (req,res)=>{
     var key = req.params.id
     fetchUser(key)
@@ -192,6 +205,7 @@ deleteUser: async (req,res)=>{
     Singlefetch(key,'DELETE', 'https://dev-1ksx3uq3.us.auth0.com/api/v2/users/')
     .then(async (result)=>{
         await postCollection.deleteMany({"author.sub":key})
+        await repostCollection.deleteMany({"author.sub":key})
         await friendCollection.deleteOne({user_id:key})
         await friendCollection.updateMany({friendRequest:key},{$pull:{friendRequest:key}})
         await friendCollection.updateMany({friends:key},{$pull:{friends:key}})

@@ -84,7 +84,7 @@ const App = () => {
           ) : null}
 
           {isAuthenticated ? (
-            <Button variant="contained" color="primary" href={`/liveChat/user1`}>
+            <Button variant="contained" color="primary" href={`/liveChat/ ${user.sub}`}>
               Live Chat
             </Button>
           ) : null}
