@@ -20,4 +20,4 @@ Yeung Long Sang - all backend codes as well as the setting on MongoDB and Auth0
 
 Luk Man Hin - both frontend and backend code of LiveChat.js and useChatRoom.js
 
-Sou Ho Kong - (Updated)Programming-Project-main.zip
+Sou Ho Kong, Yeung Tsz Lung - (Updated)Programming-Project-main.zip
